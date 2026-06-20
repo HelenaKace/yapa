@@ -1,0 +1,23 @@
+import { NextResponse } from "next/server";
+import { aiEnabled, buildBundle } from "@/lib/anthropic";
+import { employeeView } from "@/lib/store";
+import { CURRENT_USER_ID } from "@/lib/seed";
+
+export async function POST(req) {
+  const body = await req.json();
+  const employeeId = body.employeeId || CURRENT_USER_ID;
+  const me = employeeView(employeeId);
+  if (!aiEnabled()) {
+    return NextResponse.json({ error: "AI not configured. Add ANTHROPIC_API_KEY." }, { status: 503 });
+  }
+  try {
+    const bundle = await buildBundle({
+      goal: body.goal || "a nice mix of benefits",
+      budgetALL: Math.min(me.budgetLeftALL, body.budgetALL || me.budgetLeftALL),
+      lang: body.lang || "en",
+    });
+    return NextResponse.json({ bundle, ai: true });
+  } catch (e) {
+    return NextResponse.json({ error: String(e.message || e) }, { status: 500 });
+  }
+}
