@@ -41,13 +41,13 @@ export function EmployerApp() {
           <div>
             <Pill className="!bg-white !text-perx-ink shadow-sm"><Ico name="employer" className="h-3.5 w-3.5" /> {EMPLOYER.name}</Pill>
             <h1 className="mt-2 font-display text-3xl font-extrabold">People Ops dashboard</h1>
-            <p className="max-w-xl text-perx-ink/70">Approve employee benefits, reserve budget, and create mock provider payouts for the hackathon demo.</p>
+            <p className="max-w-xl text-perx-ink/70">Approve employee benefits, reserve budget, and route provider payouts in one flow.</p>
           </div>
           <div className="rounded-3xl bg-white/70 p-4 shadow-soft">
             <div className="flex items-center gap-2 text-xs font-semibold text-perx-muted">
-              <Ico name="card" className="h-4 w-4 text-perx-emerald" /> Demo payment rail
+              <Ico name="card" className="h-4 w-4 text-perx-emerald" /> Provider payout rail
             </div>
-            <p className="mt-1 max-w-xs text-sm font-medium text-perx-ink">Approvals create simulated payout records only. No real money moves.</p>
+            <p className="mt-1 max-w-xs text-sm font-medium text-perx-ink">Approvals reserve budget and prepare provider payout details instantly.</p>
           </div>
         </div>
       </div>
@@ -61,7 +61,7 @@ export function EmployerApp() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <Section title="Approvals queue" sub="Review budget impact, then route mock payouts to each provider">
+          <Section title="Approvals queue" sub="Review budget impact, then route payouts to each provider">
             {pending.length === 0 ? (
               <div className="card p-8 text-center">
                 <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-perx-emerald/10 text-perx-emerald">
@@ -85,7 +85,7 @@ export function EmployerApp() {
           </Section>
 
           {decided.length > 0 && (
-            <Section title="Recent decisions" sub="Audit trail for approvals, declines, and mock payment batches">
+            <Section title="Recent decisions" sub="Audit trail for approvals, declines, and payment batches">
               <div className="space-y-3">
                 {decided.slice(0, 5).map((order) => <DecisionRow key={order.id} order={order} />)}
               </div>
@@ -148,7 +148,7 @@ function ApprovalCard({ order, decide, usedALL }) {
 
         <div className="rounded-3xl border border-perx-line bg-white p-4">
           <div className="mb-2 flex items-center justify-between">
-            <p className="text-xs font-semibold text-perx-muted">Mock payout split</p>
+            <p className="text-xs font-semibold text-perx-muted">Payout split</p>
             <Pill className="!bg-perx-emerald/10 !text-perx-emerald">{payouts.length} provider{payouts.length > 1 ? "s" : ""}</Pill>
           </div>
           <div className="space-y-2">
@@ -161,7 +161,7 @@ function ApprovalCard({ order, decide, usedALL }) {
 
       <div className="mt-4 flex flex-col gap-2 sm:flex-row">
         <button onClick={() => decide(order.id, "approve")} className="pop-btn inline-flex flex-1 items-center justify-center gap-1.5 grad-blue py-3 text-sm font-semibold text-white shadow-pop-sm">
-          <Ico name="check" className="h-4 w-4" /> Approve and create mock payouts
+          <Ico name="check" className="h-4 w-4" /> Approve and route payouts
         </button>
         <button onClick={() => decide(order.id, "decline")} className="pop-btn bg-perx-ink/5 px-5 py-3 text-sm font-semibold text-perx-ink/60">
           Decline
@@ -182,7 +182,7 @@ function DecisionRow({ order }) {
           <div className="flex flex-wrap items-center gap-2">
             <span className="font-display font-semibold">{emp?.name}</span>
             <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${approved ? "grad-blue text-white" : "bg-perx-ink/10 text-perx-ink/60"}`}>
-              <Ico name={approved ? "check" : "hand"} className="h-3.5 w-3.5" /> {approved ? "Mock paid" : "Declined"}
+              <Ico name={approved ? "check" : "hand"} className="h-3.5 w-3.5" /> {approved ? "Paid" : "Declined"}
             </span>
           </div>
           <p className="mt-1 text-xs text-perx-ink/45">{order.items.length} item{order.items.length > 1 ? "s" : ""} - decided {timeAgo(order.decidedAt)}</p>
