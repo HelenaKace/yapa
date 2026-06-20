@@ -1,21 +1,13 @@
 "use client";
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
-import { OFFER_MAP, PACKAGE_MAP, packagePriceALL, CURRENT_USER_ID, EMPLOYEE_MAP } from "@/lib/seed";
+import { CURRENT_USER_ID, EMPLOYEE_MAP } from "@/lib/seed";
 import { DEFAULT_THEME, themeCopy } from "@/lib/themes";
+import { priceForItem } from "@/lib/orders";
 
 const StoreCtx = createContext(null);
 export const useStore = () => useContext(StoreCtx);
 
 const SESSION_KEY = "perx_session_v1";
-
-function priceOf(item) {
-  if (item.kind === "package") {
-    const p = PACKAGE_MAP[item.id];
-    return p ? packagePriceALL(p) : 0;
-  }
-  const o = OFFER_MAP[item.id];
-  return o ? o.priceALL : 0;
-}
 
 export function StoreProvider({ children }) {
   const [mounted, setMounted] = useState(false);
@@ -117,37 +109,42 @@ export function StoreProvider({ children }) {
   }, []);
 
   // ---- cart ----
-  const inCart = useCallback((kind, id) => cart.some((c) => c.kind === kind && c.id === id), [cart]);
-  const toggleCart = useCallback((kind, id) => {
+  const inCart = useCallback((type, id) => cart.some((c) => c.type === type && c.id === id), [cart]);
+  const toggleCart = useCallback((type, id) => {
     setCart((prev) => {
-      const exists = prev.some((c) => c.kind === kind && c.id === id);
-      if (exists) return prev.filter((c) => !(c.kind === kind && c.id === id));
-      return [...prev, { kind, id }];
+      const exists = prev.some((c) => c.type === type && c.id === id);
+      if (exists) return prev.filter((c) => !(c.type === type && c.id === id));
+      return [...prev, { type, id }];
     });
   }, []);
-  const removeFromCart = useCallback((kind, id) => {
-    setCart((prev) => prev.filter((c) => !(c.kind === kind && c.id === id)));
+  const removeFromCart = useCallback((type, id) => {
+    setCart((prev) => prev.filter((c) => !(c.type === type && c.id === id)));
   }, []);
   const clearCart = useCallback(() => setCart([]), []);
-  const cartTotal = cart.reduce((s, it) => s + priceOf(it), 0);
+  const cartTotal = cart.reduce((s, it) => s + priceForItem(it), 0);
 
   const fireRocket = useCallback((payload) => {
     setRocket(payload || { icon: "check", title: "Done!" });
     setTimeout(() => setRocket(null), 2400);
   }, []);
-  const showToast = useCallback((text, kind = "ok") => {
-    setToast({ text, kind, id: Math.random() });
+  const showToast = useCallback((text, tone = "ok") => {
+    setToast({ text, tone, id: Math.random() });
     setTimeout(() => setToast(null), 3200);
   }, []);
 
   const submitSelection = useCallback(async (note = "") => {
     if (cart.length === 0) return;
-    const items = cart.map((c) => ({ kind: c.kind, id: c.id }));
-    await fetch("/api/selection", {
+    const items = cart.map((c) => ({ type: c.type, id: c.id }));
+    const r = await fetch("/api/selection", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ employeeId, items, note }),
     });
+    if (!r.ok) {
+      const d = await r.json().catch(() => ({}));
+      showToast(d.error || "Could not submit selection", "warn");
+      return;
+    }
     clearCart();
     await refresh();
     fireRocket({ icon: "send", title: "Sent for approval", sub: "We'll ping People Ops to confirm" });

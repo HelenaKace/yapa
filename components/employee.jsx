@@ -5,6 +5,7 @@ import { useStore } from "@/app/store-context";
 import {
   OFFERS, PACKAGES, CATEGORIES, OFFER_MAP, PACKAGE_MAP, CATEGORY_MAP,
 } from "@/lib/seed";
+import { itemMeta, offerIdsForItem } from "@/lib/orders";
 import { OfferCard, PackageCard } from "./cards";
 import { Section, Money, Pill, AiBadge, Blob } from "./ui";
 import { levelFor, achievements, LEVELS } from "@/lib/gamify";
@@ -228,9 +229,7 @@ function MyBenefits() {
   const orders = me.orders || [];
   const approved = orders.filter((o) => o.status === "approved");
   const lines = approved.flatMap((o) =>
-    o.items.flatMap((it) =>
-      it.kind === "package" ? (PACKAGE_MAP[it.id]?.offerIds || []) : [it.id]
-    )
+    o.items.flatMap((it) => offerIdsForItem(it))
   );
   const categoriesUsed = new Set(lines.map((oid) => OFFER_MAP[oid]?.category).filter(Boolean));
   const totalSpent = approved.reduce((s, o) => s + o.totalALL, 0);
@@ -285,10 +284,10 @@ function OrderRow({ order }) {
       <div className="flex-1">
         <div className="flex flex-wrap items-center gap-2">
           {order.items.map((it) => {
-            const title = it.kind === "package" ? PACKAGE_MAP[it.id]?.title : OFFER_MAP[it.id]?.title;
+            const meta = itemMeta(it);
             return (
               <span key={it.id} className="inline-flex items-center gap-1.5 rounded-full border border-perx-line bg-white px-3 py-1 text-xs font-medium">
-                {it.kind === "package" ? <PackageIcon theme={PACKAGE_MAP[it.id]?.theme} className="h-3.5 w-3.5 text-perx-purple" /> : <Ico name="ticket" className="h-3.5 w-3.5 text-perx-purple" />} {title}
+                {meta.isPackage ? <PackageIcon theme={meta.theme} className="h-3.5 w-3.5 text-perx-purple" /> : <Ico name="ticket" className="h-3.5 w-3.5 text-perx-purple" />} {meta.title}
               </span>
             );
           })}

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useStore } from "@/app/store-context";
-import { PROVIDERS, OFFERS, OFFER_MAP, PROVIDER_MAP, CATEGORY_MAP, PACKAGE_MAP } from "@/lib/seed";
+import { PROVIDERS, OFFERS, OFFER_MAP, PROVIDER_MAP, CATEGORY_MAP } from "@/lib/seed";
 import { Money, Pill, Section, Blob } from "./ui";
 import { Ico, ProviderIcon } from "./icons";
 
@@ -13,16 +13,18 @@ export function ProviderApp() {
   const myOffers = OFFERS.filter((o) => o.providerId === providerId);
   const revenue = full?.providerRevenue?.[providerId] || 0;
 
-  // bookings: approved orders that include one of my offers
   const bookings = [];
   for (const ord of full?.orders || []) {
     if (ord.status !== "approved") continue;
-    for (const it of ord.items) {
-      const offerIds = it.kind === "package" ? (PACKAGE_MAP[it.id]?.offerIds || []) : [it.id];
-      for (const oid of offerIds) {
-        if (OFFER_MAP[oid]?.providerId === providerId) {
-          bookings.push({ orderId: ord.id, offerId: oid, ts: ord.decidedAt, amount: OFFER_MAP[oid].priceALL });
-        }
+    for (const payment of ord.payments || []) {
+      if (payment.providerId === providerId) {
+        bookings.push({
+          orderId: ord.id,
+          offerId: payment.offerId,
+          ts: payment.processedAt,
+          amount: payment.amountALL,
+          ref: payment.paymentRef,
+        });
       }
     }
   }
@@ -79,7 +81,10 @@ export function ProviderApp() {
               {bookings.map((b, i) => (
                 <motion.div key={i} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
                   className="flex items-center justify-between rounded-2xl bg-white/70 p-3 text-sm">
-                  <span className="truncate">{OFFER_MAP[b.offerId]?.title}</span>
+                  <div className="min-w-0">
+                    <p className="truncate">{OFFER_MAP[b.offerId]?.title}</p>
+                    <p className="truncate text-[10px] font-medium text-perx-ink/35">{b.ref}</p>
+                  </div>
                   <span className="font-display font-semibold text-perx-blue">+<Money all={b.amount} /></span>
                 </motion.div>
               ))}

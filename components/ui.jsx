@@ -133,7 +133,7 @@ export function Toast() {
           className="fixed bottom-6 left-1/2 z-[110] -translate-x-1/2"
         >
           <div className="flex items-center gap-2 rounded-full bg-perx-ink px-5 py-3 text-sm font-medium text-white shadow-pop">
-            <span className={`h-2 w-2 rounded-full ${toast.kind === "warn" ? "bg-perx-gold" : "bg-perx-emerald"}`} />
+            <span className={`h-2 w-2 rounded-full ${toast.tone === "warn" ? "bg-perx-gold" : "bg-perx-emerald"}`} />
             {toast.text}
           </div>
         </motion.div>

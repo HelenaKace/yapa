@@ -1,36 +1,36 @@
 import { NextResponse } from "next/server";
 import { aiEnabled, employerInsights, heuristicInsights } from "@/lib/anthropic";
 import { fullState } from "@/lib/store";
-import { OFFER_MAP, PACKAGE_MAP, CATEGORY_MAP, EMPLOYER, EMPLOYEES, PROVIDER_MAP } from "@/lib/seed";
+import { OFFER_MAP, CATEGORY_MAP, EMPLOYER, EMPLOYEES, PROVIDER_MAP } from "@/lib/seed";
 
 export const dynamic = "force-dynamic";
 
 function computeStats() {
   const state = fullState();
   const approved = state.orders.filter((o) => o.status === "approved");
+  const pending = state.orders.filter((o) => o.status === "pending");
   const byCategory = {};
   const byProvider = {};
   let totalSpend = 0;
   for (const ord of approved) {
-    for (const it of ord.items) {
-      const offers = it.kind === "package" ? (PACKAGE_MAP[it.id]?.offerIds || []) : [it.id];
-      for (const oid of offers) {
-        const o = OFFER_MAP[oid];
-        if (!o) continue;
-        const cat = CATEGORY_MAP[o.category]?.en || o.category;
-        byCategory[cat] = (byCategory[cat] || 0) + o.priceALL;
-        const pname = PROVIDER_MAP[o.providerId]?.name || o.providerId;
-        byProvider[pname] = (byProvider[pname] || 0) + o.priceALL;
-        totalSpend += o.priceALL;
-      }
+    for (const payment of ord.payments || []) {
+      const offer = OFFER_MAP[payment.offerId];
+      if (!offer) continue;
+      const cat = CATEGORY_MAP[offer.category]?.en || offer.category;
+      byCategory[cat] = (byCategory[cat] || 0) + payment.amountALL;
+      const pname = PROVIDER_MAP[payment.providerId]?.name || payment.providerId;
+      byProvider[pname] = (byProvider[pname] || 0) + payment.amountALL;
+      totalSpend += payment.amountALL;
     }
   }
   const totalBudget = EMPLOYER.budgetPerEmployeeALL * EMPLOYEES.length;
   const activeEmployees = new Set(approved.map((o) => o.employeeId)).size;
+  const pendingLiabilityALL = pending.reduce((sum, order) => sum + order.totalALL, 0);
   return {
     totalSpendALL: totalSpend,
     totalBudgetALL: totalBudget,
     utilisationPct: Math.round((totalSpend / totalBudget) * 100),
+    pendingLiabilityALL,
     byCategory,
     byProvider,
     activeEmployees,

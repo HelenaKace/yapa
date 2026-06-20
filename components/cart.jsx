@@ -2,7 +2,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useStore } from "@/app/store-context";
-import { OFFER_MAP, PACKAGE_MAP, PROVIDER_MAP, packagePriceALL } from "@/lib/seed";
+import { PROVIDER_MAP } from "@/lib/seed";
+import { itemMeta, priceForItem, providerCountForItems } from "@/lib/orders";
 import { Money } from "./ui";
 import { Ico, ProviderIcon, PackageIcon } from "./icons";
 
@@ -38,13 +39,7 @@ function useCartTotal() {
 function CartDrawer({ open, onClose }) {
   const { cart, cartTotal, removeFromCart, submitSelection, me } = useStore();
   const overBudget = me && cartTotal > me.budgetLeftALL;
-  const providers = new Set(
-    cart.flatMap((c) =>
-      c.kind === "package"
-        ? (PACKAGE_MAP[c.id]?.offerIds || []).map((oid) => OFFER_MAP[oid]?.providerId)
-        : [OFFER_MAP[c.id]?.providerId]
-    )
-  );
+  const providerCount = providerCountForItems(cart);
 
   async function submit() {
     await submitSelection();
@@ -70,20 +65,19 @@ function CartDrawer({ open, onClose }) {
             <div className="no-scrollbar max-h-[45vh] space-y-2 overflow-y-auto px-5">
               {cart.length === 0 && <p className="py-8 text-center text-perx-ink/50">Nothing here yet — go find something good.</p>}
               {cart.map((c) => {
-                const isPkg = c.kind === "package";
-                const item = isPkg ? PACKAGE_MAP[c.id] : OFFER_MAP[c.id];
-                const price = isPkg ? packagePriceALL(item) : item?.priceALL;
+                const meta = itemMeta(c);
+                const price = priceForItem(c);
                 return (
-                  <div key={c.kind + c.id} className="flex items-center gap-3 rounded-2xl bg-white/80 p-3 shadow-pop-sm">
-                    <div className={`grid h-11 w-11 place-items-center rounded-xl ${isPkg ? "grad-grape" : "grad-blue"} text-white`}>
-                      {isPkg ? <PackageIcon theme={item?.theme} className="h-5 w-5" /> : <ProviderIcon id={item?.providerId} className="h-5 w-5" />}
+                  <div key={c.type + c.id} className="flex items-center gap-3 rounded-2xl bg-white/80 p-3 shadow-pop-sm">
+                    <div className={`grid h-11 w-11 place-items-center rounded-xl ${meta.isPackage ? "grad-grape" : "grad-blue"} text-white`}>
+                      {meta.isPackage ? <PackageIcon theme={meta.theme} className="h-5 w-5" /> : <ProviderIcon id={meta.providerId} className="h-5 w-5" />}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold">{item?.title}</p>
-                      <p className="text-xs text-perx-ink/50">{isPkg ? `Bundle · ${item?.offerIds.length} items` : PROVIDER_MAP[item?.providerId]?.name}</p>
+                      <p className="truncate text-sm font-semibold">{meta.title}</p>
+                      <p className="text-xs text-perx-ink/50">{meta.isPackage ? meta.subtitle : PROVIDER_MAP[meta.providerId]?.name}</p>
                     </div>
                     <span className="font-display text-sm font-semibold"><Money all={price} /></span>
-                    <button onClick={() => removeFromCart(c.kind, c.id)} className="text-perx-ink/30 hover:text-perx-purple"><Ico name="close" className="h-4 w-4" /></button>
+                    <button onClick={() => removeFromCart(c.type, c.id)} className="text-perx-ink/30 hover:text-perx-purple"><Ico name="close" className="h-4 w-4" /></button>
                   </div>
                 );
               })}
@@ -92,7 +86,7 @@ function CartDrawer({ open, onClose }) {
             <div className="space-y-3 p-5">
               {cart.length > 0 && (
                 <div className="flex items-center gap-1.5 text-xs font-semibold text-perx-blue">
-                  <Ico name="link" className="h-3.5 w-3.5" /> routes payment to {providers.size} provider{providers.size > 1 ? "s" : ""} on approval
+                  <Ico name="link" className="h-3.5 w-3.5" /> routes payment to {providerCount} provider{providerCount > 1 ? "s" : ""} on approval
                 </div>
               )}
               <div className="flex items-center justify-between">
