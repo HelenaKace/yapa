@@ -6,7 +6,7 @@ import {
   OFFERS, PACKAGES, CATEGORIES, OFFER_MAP, PACKAGE_MAP, CATEGORY_MAP,
 } from "@/lib/seed";
 import { OfferCard, PackageCard } from "./cards";
-import { Section, Money, Pill, AiBadge } from "./ui";
+import { Section, Money, Pill, AiBadge, Blob } from "./ui";
 import { levelFor, achievements, LEVELS } from "@/lib/gamify";
 import { Ico, PackageIcon } from "./icons";
 
@@ -82,17 +82,18 @@ function Discover({ onBrowse }) {
         initial={{ y: 10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.4 }}
-        className="relative mb-8 overflow-hidden rounded-5xl grad-hero p-8 text-white shadow-glow"
+        className="relative mb-8 overflow-hidden rounded-5xl p-8 shadow-soft"
+        style={{ backgroundColor: "#FCE7EE" }}
       >
-        <div className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-white/10 blur-3xl animate-float" />
-        <div className="pointer-events-none absolute -bottom-24 right-24 h-56 w-56 rounded-full bg-perx-emerald/20 blur-3xl" />
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold text-white/90">
+        <Blob variant="bowtie" color="#F7D14B" className="right-8 top-8 h-14 w-10 rotate-12" />
+        <Blob variant="splash" color="#7ED0A0" className="-bottom-8 -right-6 h-32 w-36 opacity-70" />
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-xs font-semibold text-perx-ink shadow-sm">
           {greeting()} · {user?.role}
         </span>
-        <h1 className="mt-3 max-w-xl font-display text-3xl font-extrabold leading-[1.1] tracking-tight md:text-[2.6rem]">
+        <h1 className="mt-3 max-w-xl font-display text-3xl font-extrabold leading-[1.1] tracking-tight text-perx-ink md:text-[2.6rem]">
           {greeting()}, {user?.name?.split(" ")[0]}.
         </h1>
-        <p className="mt-2 max-w-md text-[15px] text-white/75">
+        <p className="mt-2 max-w-md text-[15px] text-perx-ink/70">
           {tc.heroSubApp}
         </p>
         <div className="mt-6 flex flex-wrap items-stretch gap-3">
@@ -101,10 +102,10 @@ function Discover({ onBrowse }) {
           <HeroStat label="Streak" value={`${me?.gamification?.streakWeeks ?? 0} wks`} />
         </div>
         <div className="mt-6 flex flex-wrap gap-2.5">
-          <button onClick={() => setConciergeOpen(true)} className="pop-btn inline-flex items-center gap-1.5 bg-white px-5 py-2.5 text-sm font-semibold text-perx-indigo shadow-pop-sm">
+          <button onClick={() => setConciergeOpen(true)} className="pop-btn inline-flex items-center gap-1.5 bg-perx-ink px-5 py-2.5 text-sm font-semibold text-white">
             <Ico name="sparkles" className="h-4 w-4" /> {tc.ctaConcierge}
           </button>
-          <button onClick={onBrowse} className="pop-btn border border-white/25 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/15">
+          <button onClick={onBrowse} className="pop-btn border border-perx-ink/15 bg-white px-5 py-2.5 text-sm font-semibold text-perx-ink hover:bg-white/70">
             {tc.ctaBrowse}
           </button>
         </div>
@@ -246,8 +247,10 @@ function MyBenefits() {
 
       {/* year in benefits */}
       <button onClick={() => setWrappedOpen(true)}
-        className="mb-6 block w-full overflow-hidden rounded-5xl grad-hero p-6 text-left text-white shadow-glow transition hover:brightness-105">
-        <Pill className="!bg-white/20 !text-white"><Ico name="film" className="h-3.5 w-3.5" /> Your Year in Benefits</Pill>
+        className="relative mb-6 block w-full overflow-hidden rounded-5xl p-6 text-left text-white shadow-soft transition hover:brightness-[1.03]"
+        style={{ backgroundColor: "#F8875A" }}>
+        <Blob variant="splash" color="#ffffff" className="-bottom-8 right-8 h-24 w-28 opacity-15" />
+        <Pill className="!bg-white/25 !text-white"><Ico name="film" className="h-3.5 w-3.5" /> Your Year in Benefits</Pill>
         <h3 className="mt-2 font-display text-2xl font-bold">
           {totalSpent > 0 ? <>You've enjoyed <Money all={totalSpent} /> in perks</> : "Your story starts with one tap"}
         </h3>
@@ -315,33 +318,34 @@ function Rewards() {
   return (
     <>
       {/* level card */}
-      <div className={`relative mb-6 overflow-hidden rounded-5xl ${lvl.current.grad} p-7 text-white shadow-glow`}>
-        <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-white/10 blur-3xl" />
+      <div className="relative mb-6 overflow-hidden rounded-5xl p-7 text-perx-ink shadow-soft" style={{ backgroundColor: "#ECE6FB" }}>
+        <Blob variant="bowtie" color="#F7D14B" className="right-8 top-8 h-12 w-9 rotate-12" />
+        <Blob variant="splash" color="#9F7AEA" className="-bottom-8 -right-4 h-28 w-32 opacity-40" />
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-sm font-semibold uppercase tracking-[0.18em] text-white/70">Your level</span>
+            <span className="text-sm font-semibold uppercase tracking-[0.18em] text-perx-ink/50">Your level</span>
             <div className="mt-1 flex items-center gap-3">
-              <Ico name={lvl.current.icon} className="h-9 w-9" />
+              <Ico name={lvl.current.icon} className="h-9 w-9 text-perx-purple" />
               <h2 className="font-display text-3xl font-extrabold">{lvl.current.id}</h2>
             </div>
           </div>
           <div className="text-right">
             <div className="font-display text-3xl font-extrabold">{g.points || 0}</div>
-            <div className="text-xs text-white/70">PERX points</div>
+            <div className="text-xs text-perx-ink/55">PERX points</div>
           </div>
         </div>
         <div className="mt-5">
-          <div className="mb-1.5 flex justify-between text-xs font-medium text-white/80">
+          <div className="mb-1.5 flex justify-between text-xs font-medium text-perx-ink/70">
             <span>{lvl.current.id}</span>
             <span className="flex items-center gap-1">{lvl.next ? <>{lvl.toNext} pts to {lvl.next.id} <Ico name={lvl.next.icon} className="h-3.5 w-3.5" /></> : <><Ico name="crown" className="h-3.5 w-3.5" /> Max level reached</>}</span>
           </div>
-          <div className="h-2.5 overflow-hidden rounded-full bg-white/20">
-            <motion.div className="h-full rounded-full bg-white" initial={{ width: 0 }} animate={{ width: `${lvl.pct * 100}%` }} transition={{ duration: 0.9 }} />
+          <div className="h-2.5 overflow-hidden rounded-full bg-perx-ink/10">
+            <motion.div className="h-full rounded-full bg-perx-ink" initial={{ width: 0 }} animate={{ width: `${lvl.pct * 100}%` }} transition={{ duration: 0.9 }} />
           </div>
         </div>
         <div className="mt-5 flex flex-wrap gap-2">
           {LEVELS.map((l) => (
-            <span key={l.id} className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${l.min <= (g.points || 0) ? "bg-white/25" : "bg-white/10 text-white/60"}`}>
+            <span key={l.id} className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${l.min <= (g.points || 0) ? "bg-perx-ink text-white" : "border border-black/5 bg-white text-perx-ink/45"}`}>
               <Ico name={l.icon} className="h-3.5 w-3.5" /> {l.id}
             </span>
           ))}
@@ -391,9 +395,9 @@ function Rewards() {
 
 function HeroStat({ label, value }) {
   return (
-    <div className="rounded-2xl bg-white/12 px-4 py-3 backdrop-blur">
-      <div className="text-[11px] font-medium uppercase tracking-wide text-white/60">{label}</div>
-      <div className="mt-0.5 font-display text-lg font-bold text-white">{value}</div>
+    <div className="rounded-2xl border border-black/5 bg-white px-4 py-3">
+      <div className="text-[11px] font-medium uppercase tracking-wide text-perx-ink/45">{label}</div>
+      <div className="mt-0.5 font-display text-lg font-bold text-perx-ink">{value}</div>
     </div>
   );
 }

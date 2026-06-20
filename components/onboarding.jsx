@@ -107,7 +107,7 @@ export function Onboarding() {
               <div className="grid min-h-[60vh] place-items-center text-center">
                 <div>
                   <motion.div initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", damping: 14 }}
-                    className="mx-auto grid h-20 w-20 place-items-center rounded-3xl grad-hero text-white shadow-glow"><Ico name="sparkles" className="h-9 w-9" /></motion.div>
+                    className="mx-auto grid h-20 w-20 place-items-center rounded-3xl text-white shadow-soft" style={{ backgroundColor: "#F8875A" }}><Ico name="sparkles" className="h-9 w-9" /></motion.div>
                   <h1 className="mt-6 font-display text-3xl font-extrabold tracking-tight md:text-4xl">Welcome, {firstName}.</h1>
                   <p className="mx-auto mt-3 max-w-md text-lg text-perx-muted">Let's personalize your benefits experience. It takes about 2 minutes.</p>
                   <button onClick={() => setStep(1)} className="pop-btn mt-8 inline-flex items-center gap-2 grad-grape px-8 py-3.5 text-base font-semibold text-white shadow-glow">Let's go <Ico name="arrow" className="h-4 w-4" /></button>
@@ -158,7 +158,7 @@ export function Onboarding() {
             <Slide key="ai">
               <div className="text-center">
                 <motion.div initial={{ scale: 0.7, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-                  className="mx-auto grid h-16 w-16 place-items-center rounded-3xl grad-hero text-white shadow-glow">
+                  className="mx-auto grid h-16 w-16 place-items-center rounded-3xl text-white shadow-soft" style={{ backgroundColor: "#9F7AEA" }}>
                   <Ico name={VIBES.find((v) => v.id === vibe)?.icon || "sparkles"} className="h-7 w-7" />
                 </motion.div>
                 <h1 className="mt-5 font-display text-3xl font-extrabold tracking-tight">You're a {vibe}.</h1>

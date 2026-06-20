@@ -9,6 +9,15 @@ export function Money({ all, className = "" }) {
   return <span className={className}>{formatMoney(all, currency)}</span>;
 }
 
+// Playful organic accent shapes (Juno-style) — bowtie + splash.
+export function Blob({ variant = "splash", color, className = "", style = {} }) {
+  const shape =
+    variant === "bowtie"
+      ? { clipPath: "polygon(0 0, 100% 0, 38% 50%, 100% 100%, 0 100%, 62% 50%)" }
+      : { borderRadius: "42% 58% 57% 43% / 53% 44% 56% 47%" };
+  return <div aria-hidden className={`pointer-events-none absolute ${className}`} style={{ backgroundColor: color, ...shape, ...style }} />;
+}
+
 export function Pill({ children, className = "", grad }) {
   return (
     <span

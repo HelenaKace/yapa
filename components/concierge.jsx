@@ -60,7 +60,7 @@ export function Concierge() {
             transition={{ type: "spring", damping: 26, stiffness: 240 }}
           >
             {/* header */}
-            <div className="grad-grape p-5 text-white">
+            <div className="p-5 text-white" style={{ backgroundColor: "#F8875A" }}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Ico name="sparkles" className="h-6 w-6" />

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useStore } from "@/app/store-context";
 import { OFFER_MAP, PACKAGE_MAP, PROVIDER_MAP, EMPLOYEE_MAP, EMPLOYEES, EMPLOYER } from "@/lib/seed";
-import { Money, Pill, AiBadge, Section } from "./ui";
+import { Money, Pill, AiBadge, Section, Blob } from "./ui";
 import { Ico, PackageIcon } from "./icons";
 
 export function EmployerApp() {
@@ -27,10 +27,12 @@ export function EmployerApp() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 pb-28 pt-6">
-      <div className="mb-6 overflow-hidden rounded-5xl grad-blue p-6 text-white shadow-pop">
-        <Pill className="!bg-white/20 !text-white"><Ico name="employer" className="h-3.5 w-3.5" /> {EMPLOYER.name}</Pill>
-        <h1 className="mt-2 font-display text-3xl font-bold">People Ops dashboard</h1>
-        <p className="text-white/80">Approve benefits, route payments, and see what your team actually values.</p>
+      <div className="relative mb-6 overflow-hidden rounded-5xl p-6 text-perx-ink shadow-soft" style={{ backgroundColor: "#E4F2E7" }}>
+        <Blob variant="bowtie" color="#F7D14B" className="right-8 top-7 h-12 w-9 -rotate-12" />
+        <Blob variant="splash" color="#2DB390" className="-bottom-8 -right-4 h-28 w-32 opacity-25" />
+        <Pill className="!bg-white !text-perx-ink shadow-sm"><Ico name="employer" className="h-3.5 w-3.5" /> {EMPLOYER.name}</Pill>
+        <h1 className="mt-2 font-display text-3xl font-extrabold">People Ops dashboard</h1>
+        <p className="text-perx-ink/70">Approve benefits, route payments, and see what your team actually values.</p>
       </div>
 
       {/* KPIs */}

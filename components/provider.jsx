@@ -3,7 +3,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useStore } from "@/app/store-context";
 import { PROVIDERS, OFFERS, OFFER_MAP, PROVIDER_MAP, CATEGORY_MAP, PACKAGE_MAP } from "@/lib/seed";
-import { Money, Pill, Section } from "./ui";
+import { Money, Pill, Section, Blob } from "./ui";
 import { Ico, ProviderIcon } from "./icons";
 
 export function ProviderApp() {
@@ -29,8 +29,9 @@ export function ProviderApp() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 pb-28 pt-6">
-      <div className="mb-6 overflow-hidden rounded-5xl grad-sun p-6 text-perx-ink shadow-pop">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="relative mb-6 overflow-hidden rounded-5xl p-6 text-perx-ink shadow-soft" style={{ backgroundColor: "#FBF3C9" }}>
+        <Blob variant="splash" color="#F2B544" className="-bottom-8 -right-4 h-28 w-32 opacity-30" />
+        <div className="relative flex flex-wrap items-center justify-between gap-3">
           <div>
             <Pill className="!bg-white/40">Provider portal</Pill>
             <h1 className="mt-2 flex items-center gap-2.5 font-display text-3xl font-bold"><ProviderIcon id={providerId} className="h-7 w-7" /> {prov?.name}</h1>
