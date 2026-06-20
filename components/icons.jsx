@@ -7,7 +7,7 @@ import {
   Store, BadgeCheck, Globe, Leaf, Target, Users, Laptop, Mountain, BookOpen,
   HeartPulse, Drama, Handshake, ChevronRight, ArrowRight, ArrowLeft, Heart, MapPin,
   Plus, CreditCard, Receipt, TrendingUp, BarChart3, Lightbulb, Clock, Hand, Building,
-  Palette,
+  Palette, LogOut, ChevronDown,
 } from "lucide-react";
 
 // Central registry — reference icons by stable string name so data files
@@ -78,6 +78,8 @@ const REGISTRY = {
   hand: Hand,
   building: Building,
   palette: Palette,
+  logout: LogOut,
+  "chevron-down": ChevronDown,
 };
 
 export function Ico({ name, className = "", size, strokeWidth = 2 }) {

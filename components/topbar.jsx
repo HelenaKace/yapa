@@ -1,5 +1,6 @@
 "use client";
-import { motion } from "framer-motion";
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useStore } from "@/app/store-context";
 import { LANGS } from "@/lib/i18n";
 import { CURRENCIES } from "@/lib/format";
@@ -13,7 +14,7 @@ const ROLES = [
 ];
 
 export function TopBar() {
-  const { role, setRole, lang, setLang, currency, setCurrency, me, setConciergeOpen, resetDemo } = useStore();
+  const { role, setRole, lang, setLang, currency, setCurrency, me, setConciergeOpen, resetDemo, account, user, logOut } = useStore();
 
   return (
     <header className="sticky top-0 z-50 border-b border-perx-line bg-white">
@@ -91,6 +92,7 @@ export function TopBar() {
           >
             <Ico name="reset" className="h-4 w-4" />
           </button>
+          <AccountMenu account={account} user={user} logOut={logOut} />
         </div>
       </div>
 
@@ -106,5 +108,61 @@ export function TopBar() {
         ))}
       </div>
     </header>
+  );
+}
+
+function AccountMenu({ account, user, logOut }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  const name = account?.name || user?.name || "Guest";
+  const email = account?.email || "demo@perx.app";
+  const initial = name.trim().charAt(0).toUpperCase();
+
+  useEffect(() => {
+    function onDoc(e) {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    }
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, []);
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        onClick={() => setOpen((o) => !o)}
+        title="Account"
+        className="pop-btn flex items-center gap-1.5 bg-perx-ink/[0.04] py-1 pl-1 pr-2 text-perx-ink hover:bg-perx-ink/[0.07]"
+      >
+        <span className="grid h-7 w-7 place-items-center rounded-full bg-perx-ink text-xs font-bold text-white">{initial}</span>
+        <Ico name="chevron-down" className="h-3.5 w-3.5 text-perx-muted" />
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -8, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.96 }}
+            transition={{ duration: 0.16 }}
+            className="absolute right-0 z-[120] mt-2 w-60 overflow-hidden rounded-3xl border border-perx-line bg-white p-2 shadow-pop"
+          >
+            <div className="flex items-center gap-3 px-3 py-2.5">
+              <span className="grid h-10 w-10 place-items-center rounded-full bg-perx-ink text-sm font-bold text-white">{initial}</span>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-bold text-perx-ink">{name}</p>
+                <p className="truncate text-xs text-perx-muted">{email}</p>
+              </div>
+            </div>
+            <div className="my-1 h-px bg-perx-line" />
+            <button
+              onClick={() => { setOpen(false); logOut(); }}
+              className="flex w-full items-center gap-2.5 rounded-2xl px-3 py-2.5 text-left text-sm font-semibold text-perx-ink transition hover:bg-perx-ink/[0.04]"
+            >
+              <Ico name="logout" className="h-4 w-4 text-perx-muted" /> Log out
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
