@@ -1,9 +1,9 @@
 "use client";
 import { motion } from "framer-motion";
 import { useStore } from "@/app/store-context";
-import { OFFERS, PROVIDERS, OFFER_MAP, PROVIDER_MAP } from "@/lib/seed";
-import { Money } from "./ui";
+import { PROVIDERS, PROVIDER_MAP } from "@/lib/seed";
 import { Ico, ProviderIcon } from "./icons";
+import { useState } from "react";
 
 // Distinct pastel section bands (Juno-style) — each part of the page is its own color.
 const BAND = {
@@ -30,9 +30,58 @@ function Blob({ variant, color, className = "", style = {} }) {
   return <div aria-hidden className={`pointer-events-none absolute ${className}`} style={{ backgroundColor: color, ...shape, ...style }} />;
 }
 
+function ProviderLogo({ p }) {
+  const [failed, setFailed] = useState(false);
+
+  if (!p.logo || failed) {
+    return (
+      <span className="whitespace-nowrap font-display text-2xl font-extrabold text-perx-ink md:text-3xl">
+        {p.name}
+      </span>
+    );
+  }
+
+  return (
+    <img
+      src={p.logo}
+      alt={p.name}
+      className="h-24 w-auto shrink-0 object-contain md:h-28"
+      onError={() => setFailed(true)}
+    />
+  );
+}
+
+function ProviderMarquee() {
+  const track = [...PROVIDERS, ...PROVIDERS];
+  return (
+    <div className="relative mt-6 overflow-hidden">
+      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-white to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-white to-transparent" />
+
+      <div className="marquee-track flex w-max items-center gap-20">
+        {track.map((p, i) => (
+          <ProviderLogo key={`${p.id}-${i}`} p={p} />
+        ))}
+      </div>
+
+      <style jsx>{`
+        .marquee-track {
+          animation: marquee-scroll 28s linear infinite;
+        }
+        .marquee-track:hover {
+          animation-play-state: paused;
+        }
+        @keyframes marquee-scroll {
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
 export function Landing() {
-  const { setStage, skipToDemo, tc } = useStore();
-  const featured = ["o_saranda_wk", "o_gym_month", "o_skillup", "o_spa_day"];
+  const { setStage, tc } = useStore();
 
   return (
     <div className="min-h-screen">
@@ -52,14 +101,11 @@ export function Landing() {
 
       {/* HERO — pink band */}
       <section className="relative overflow-hidden" style={{ backgroundColor: BAND.pink }}>
-        <Blob variant="bowtie" color="#F7D14B" className="left-6 top-28 h-16 w-12 rotate-12 md:left-16" />
+        <Blob variant="splash" color="#7ED0A0" className="left-6 top-28 h-16 w-12 md:left-16" />
         <Blob variant="splash" color="#7ED0A0" className="right-8 top-40 h-20 w-24 md:right-24" />
         <Blob variant="splash" color="#C9B8F2" className="-bottom-6 left-1/4 h-16 w-20 opacity-80" />
         <div className="mx-auto max-w-6xl px-5 pb-20 pt-20 text-center">
-          <motion.span {...fade()} className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-1.5 text-sm font-semibold text-perx-ink shadow-sm">
-            <Ico name="sparkles" className="h-4 w-4 text-perx-indigo" /> {tc.landingBadge}
-          </motion.span>
-          <motion.h1 {...fade(0.05)} className="mx-auto mt-6 max-w-3xl font-display text-4xl font-extrabold leading-[1.02] tracking-tight text-perx-ink md:text-6xl">
+          <motion.h1 {...fade()} className="mx-auto mt-6 max-w-3xl font-display text-4xl font-extrabold leading-[1.02] tracking-tight text-perx-ink md:text-6xl">
             {tc.heroLead} <span className="text-grad">{tc.heroEmph}</span>
           </motion.h1>
           <motion.p {...fade(0.1)} className="mx-auto mt-5 max-w-xl text-lg text-perx-ink/70">
@@ -69,24 +115,6 @@ export function Landing() {
             <button onClick={() => setStage("auth")} className="pop-btn bg-perx-ink px-7 py-3.5 text-base font-semibold text-white">
               {tc.ctaPrimary}
             </button>
-            <button onClick={() => skipToDemo("employee")} className="pop-btn inline-flex items-center gap-2 bg-white px-7 py-3.5 text-base font-semibold text-perx-ink shadow-sm">
-              <Ico name="play" className="h-4 w-4" /> {tc.ctaSecondary}
-            </button>
-          </motion.div>
-          <motion.p {...fade(0.2)} className="mt-4 text-xs font-medium text-perx-ink/50">Trusted by forward-thinking teams in Tirana · Albanian Lek · Shqip &amp; English</motion.p>
-
-          <motion.div {...fade(0.25)} className="mx-auto mt-14 grid max-w-4xl grid-cols-2 gap-3 md:grid-cols-4">
-            {featured.map((id) => {
-              const o = OFFER_MAP[id];
-              return (
-                <div key={id} className="rounded-3xl border border-black/5 bg-white p-4 text-left">
-                  <div className="grid h-10 w-10 place-items-center rounded-xl bg-perx-indigo/10 text-perx-indigo"><ProviderIcon id={o.providerId} className="h-5 w-5" /></div>
-                  <p className="mt-3 text-sm font-bold text-perx-ink">{o.title}</p>
-                  <p className="text-xs text-perx-ink/50">{PROVIDER_MAP[o.providerId]?.name}</p>
-                  <p className="mt-1 font-display text-sm font-bold text-perx-indigo"><Money all={o.priceALL} /></p>
-                </div>
-              );
-            })}
           </motion.div>
         </div>
       </section>
@@ -112,7 +140,7 @@ export function Landing() {
 
       {/* AUDIENCES — mint band */}
       <section className="relative overflow-hidden" style={{ backgroundColor: BAND.mint }}>
-        <Blob variant="bowtie" color="#F7D14B" className="right-10 top-12 h-14 w-10 -rotate-12" />
+        <Blob variant="splash" color="#7ED0A0" className="right-10 top-12 h-14 w-10" />
         <div className="mx-auto max-w-6xl px-5 py-20">
           <motion.h2 {...fade()} className="text-center font-display text-3xl font-extrabold tracking-tight md:text-4xl">One platform, three ways in</motion.h2>
           <div className="mt-12 grid gap-5 md:grid-cols-3">
@@ -136,34 +164,30 @@ export function Landing() {
         </div>
       </section>
 
-      {/* AI — coral band */}
-      <section style={{ backgroundColor: BAND.coral }}>
-        <div className="mx-auto max-w-4xl px-5 py-20 text-center text-white">
-          <motion.span {...fade()} className="inline-flex items-center gap-2 rounded-full bg-white/25 px-3 py-1 text-xs font-bold uppercase tracking-wide"><Ico name="sparkles" className="h-3.5 w-3.5" /> {tc.aiKicker}</motion.span>
-          <motion.h2 {...fade(0.05)} className="mx-auto mt-5 max-w-2xl font-display text-3xl font-extrabold tracking-tight md:text-5xl">{tc.aiQuote}</motion.h2>
-          <motion.p {...fade(0.1)} className="mx-auto mt-4 max-w-xl text-white/90">{tc.aiSub}</motion.p>
-          <motion.button {...fade(0.15)} onClick={() => setStage("auth")} className="pop-btn mt-8 bg-perx-ink px-7 py-3.5 text-base font-semibold text-white">{tc.aiCta}</motion.button>
-        </div>
-      </section>
+{/* AI — coral band */}
+<section style={{ backgroundColor: BAND.coral }}>
+  <div className="mx-auto max-w-4xl px-5 py-20 text-center text-white">
+    <motion.h2 {...fade()} className="mx-auto mt-5 max-w-2xl font-display text-3xl font-extrabold tracking-tight md:text-5xl">{tc.aiQuote}</motion.h2>
+    <motion.p {...fade(0.1)} className="mx-auto mt-4 max-w-xl text-white/90">{tc.aiSub}</motion.p>
+    <motion.button {...fade(0.15)} onClick={() => setStage("auth")} className="pop-btn mt-8 bg-perx-ink px-7 py-3.5 text-base font-semibold text-white">{tc.aiCta}</motion.button>
+  </div>
+</section>
 
-      {/* PROVIDERS — white band */}
-      <section style={{ backgroundColor: BAND.white }}>
-        <div className="mx-auto max-w-6xl px-5 py-16">
-          <p className="text-center text-sm font-bold uppercase tracking-wide text-perx-ink/50">{tc.providersKicker}</p>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-            {PROVIDERS.map((p) => (
-              <span key={p.id} className="flex items-center gap-2 rounded-full border border-perx-line bg-white px-4 py-2 text-sm font-semibold text-perx-ink">
-                <ProviderIcon id={p.id} className="h-4 w-4 text-perx-indigo" /> {p.name}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* PROVIDERS — white band, ticker-style marquee */}
+{/* PROVIDERS — white band, ticker-style marquee */}
+<section style={{ backgroundColor: BAND.white }}>
+  <div className="mx-auto max-w-6xl px-5 py-16">
+    <p className="text-center text-base font-extrabold uppercase tracking-wide text-perx-ink">
+      {tc.providersKicker}
+    </p>
+    <ProviderMarquee />
+  </div>
+</section>
 
       {/* FOOTER CTA — cream band */}
       <section className="relative overflow-hidden" style={{ backgroundColor: BAND.cream }}>
         <Blob variant="splash" color="#7ED0A0" className="left-10 top-10 h-16 w-20" />
-        <Blob variant="bowtie" color="#F2683C" className="bottom-10 right-12 h-14 w-10 rotate-6 opacity-90" />
+        <Blob variant="splash" color="#7ED0A0" className="bottom-10 right-12 h-14 w-10 opacity-90" />
         <div className="mx-auto max-w-6xl px-5 py-24 text-center">
           <motion.h2 {...fade()} className="font-display text-3xl font-extrabold tracking-tight md:text-5xl">{tc.footerTitle}</motion.h2>
           <motion.button {...fade(0.1)} onClick={() => setStage("auth")} className="pop-btn mt-8 bg-perx-ink px-8 py-4 text-base font-semibold text-white">{tc.footerCta}</motion.button>

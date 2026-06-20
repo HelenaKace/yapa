@@ -6,7 +6,7 @@ const fredoka = Fredoka({ subsets: ["latin"], weight: ["400", "500", "600", "700
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata = {
-  title: "YAPA — perks people actually want",
+  title: "PERX — perks people actually want",
   description: "A two-sided benefits marketplace built for Albania, ready for the world.",
 };
 
