@@ -5,6 +5,7 @@ import { useStore } from "@/app/store-context";
 import { summarize, levelFor, achievements } from "@/lib/gamify";
 import { CATEGORY_MAP } from "@/lib/seed";
 import { Money } from "./ui";
+import { Ico } from "./icons";
 
 const SLIDE_MS = 4200;
 
@@ -46,7 +47,7 @@ export function Wrapped() {
               </div>
             ))}
           </div>
-          <button onClick={() => setWrappedOpen(false)} className="absolute right-3 top-6 z-30 grid h-8 w-8 place-items-center rounded-full bg-white/20 text-white">✕</button>
+          <button onClick={() => setWrappedOpen(false)} className="absolute right-3 top-6 z-30 grid h-8 w-8 place-items-center rounded-full bg-white/20 text-white"><Ico name="close" className="h-4 w-4" /></button>
 
           {/* tap zones */}
           <button className="absolute left-0 top-0 z-10 h-full w-1/3" onClick={() => setI((x) => Math.max(0, x - 1))} aria-label="prev" />
@@ -60,8 +61,8 @@ export function Wrapped() {
           </AnimatePresence>
 
           {i === slides.length - 1 && (
-            <button onClick={() => setWrappedOpen(false)} className="absolute inset-x-8 bottom-8 z-30 rounded-2xl bg-white py-3 font-display text-sm font-bold text-perx-ink">
-              Done — see you next week ✨
+            <button onClick={() => setWrappedOpen(false)} className="absolute inset-x-8 bottom-8 z-30 inline-flex items-center justify-center gap-2 rounded-2xl bg-white py-3 font-display text-sm font-bold text-perx-ink">
+              Done — see you next week <Ico name="sparkles" className="h-4 w-4" />
             </button>
           )}
         </div>
@@ -78,14 +79,14 @@ function buildSlides({ s, g, lvl, badges, firstName }) {
   const slides = [];
   slides.push({
     grad: "grad-hero",
-    content: (<><motion.div initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", damping: 12 }} className="text-6xl">🎁</motion.div>
+    content: (<><motion.div initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", damping: 12 }}><Ico name="gift" className="h-16 w-16" /></motion.div>
       <h2 className="mt-5 font-display text-3xl font-extrabold">Your Year<br />in Benefits</h2>
-      <Label>A quick look back, {firstName}. Tap to continue →</Label></>),
+      <Label>A quick look back, {firstName}. Tap to continue.</Label></>),
   });
   slides.push({
     grad: "grad-grape",
     content: (<><Kicker>You enjoyed</Kicker><Big><Money all={s.total} /></Big>
-      <Label>in perks — fully funded by your company. That's money that stayed in your pocket. 💜</Label></>),
+      <Label>in perks — fully funded by your company. That's money that stayed in your pocket.</Label></>),
   });
   slides.push({
     grad: "grad-blue",
@@ -94,18 +95,18 @@ function buildSlides({ s, g, lvl, badges, firstName }) {
   });
   if (s.topCat) slides.push({
     grad: "grad-sun",
-    content: (<><div className="text-6xl">{s.topCat.emoji}</div><Kicker>Your top vibe</Kicker>
+    content: (<><Ico name={s.topCat.icon} className="h-16 w-16" /><Kicker>Your top vibe</Kicker>
       <h2 className="font-display text-4xl font-extrabold">{s.topCat.label}</h2>
       <Label>You spent the most here. Clearly your happy place.</Label></>),
   });
   slides.push({
     grad: "grad-emerald",
     content: (<><Kicker>Wellness score</Kicker><Big>{s.wellnessScore}</Big>
-      <Label>{s.wellnessScore >= 50 ? "A true Wellness Hero — your future self says thanks. 🧘" : "Room to relax more next year — your spa day awaits."}</Label></>),
+      <Label>{s.wellnessScore >= 50 ? "A true Wellness Hero — your future self says thanks." : "Room to relax more next year — your spa day awaits."}</Label></>),
   });
   slides.push({
     grad: "grad-hero",
-    content: (<><div className="text-6xl">{lvl.current.emoji}</div><Kicker>You reached</Kicker>
+    content: (<><Ico name={lvl.current.icon} className="h-16 w-16" /><Kicker>You reached</Kicker>
       <h2 className="font-display text-4xl font-extrabold">{lvl.current.id}</h2>
       <div className="mt-4 flex items-center gap-4">
         <Stat n={g.points || 0} l="points" /><Stat n={g.streakWeeks || 0} l="week streak" /><Stat n={badges} l="badges" />

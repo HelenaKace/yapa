@@ -1,8 +1,8 @@
 import "./globals.css";
-import { Plus_Jakarta_Sans, Inter } from "next/font/google";
+import { Fredoka, Inter } from "next/font/google";
 import { StoreProvider } from "./store-context";
 
-const display = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["500", "600", "700", "800"], variable: "--font-display" });
+const fredoka = Fredoka({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-fredoka" });
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata = {
@@ -12,7 +12,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${display.variable} ${inter.variable}`}>
+    <html lang="en" className={`${fredoka.variable} ${inter.variable}`}>
       <body>
         <StoreProvider>{children}</StoreProvider>
       </body>

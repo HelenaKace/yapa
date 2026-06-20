@@ -4,6 +4,7 @@ import { useStore } from "@/app/store-context";
 import { LANGS } from "@/lib/i18n";
 import { CURRENCIES } from "@/lib/format";
 import { Money, ProgressRing } from "./ui";
+import { Ico } from "./icons";
 
 const ROLES = [
   { id: "employee", label: "Employee" },
@@ -15,7 +16,7 @@ export function TopBar() {
   const { role, setRole, lang, setLang, currency, setCurrency, me, setConciergeOpen, resetDemo } = useStore();
 
   return (
-    <header className="sticky top-0 z-50 glass border-b border-perx-line">
+    <header className="sticky top-0 z-50 border-b border-perx-line bg-white">
       <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3">
         <div className="flex items-center gap-2.5">
           <div className="grid h-9 w-9 place-items-center rounded-2xl grad-grape font-display text-base font-extrabold text-white shadow-pop-sm">
@@ -70,7 +71,7 @@ export function TopBar() {
                 onClick={() => setConciergeOpen(true)}
                 className="pop-btn hidden items-center gap-1.5 grad-grape px-3.5 py-2 text-sm text-white shadow-pop-sm md:flex"
               >
-                ✦ Ask PERX
+                <Ico name="sparkles" className="h-4 w-4" /> Ask PERX
               </button>
               {me && (
                 <div className="hidden items-center gap-2 rounded-2xl border border-perx-line bg-white py-1 pl-3 pr-1.5 shadow-soft sm:flex">
@@ -88,7 +89,7 @@ export function TopBar() {
             title="Reset demo data"
             className="pop-btn grid h-9 w-9 place-items-center bg-perx-ink/[0.04] text-perx-muted hover:text-perx-ink"
           >
-            ↺
+            <Ico name="reset" className="h-4 w-4" />
           </button>
         </div>
       </div>

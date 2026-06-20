@@ -3,6 +3,17 @@ import { motion } from "framer-motion";
 import { useStore } from "@/app/store-context";
 import { OFFERS, PROVIDERS, OFFER_MAP, PROVIDER_MAP } from "@/lib/seed";
 import { Money } from "./ui";
+import { Ico, ProviderIcon } from "./icons";
+
+// Distinct pastel section bands (Juno-style) — each part of the page is its own color.
+const BAND = {
+  pink: "#FCE7EE",
+  cream: "#FBF3C9",
+  mint: "#E4F2E7",
+  coral: "#F8875A",
+  lilac: "#ECE6FB",
+  white: "#FFFFFF",
+};
 
 const fade = (d = 0) => ({
   initial: { opacity: 0, y: 18 },
@@ -11,139 +22,152 @@ const fade = (d = 0) => ({
   transition: { duration: 0.5, delay: d },
 });
 
+function Blob({ variant, color, className = "", style = {} }) {
+  const shape =
+    variant === "bowtie"
+      ? { clipPath: "polygon(0 0, 100% 0, 38% 50%, 100% 100%, 0 100%, 62% 50%)" }
+      : { borderRadius: "42% 58% 57% 43% / 53% 44% 56% 47%" };
+  return <div aria-hidden className={`pointer-events-none absolute ${className}`} style={{ backgroundColor: color, ...shape, ...style }} />;
+}
+
 export function Landing() {
-  const { setStage, skipToDemo } = useStore();
+  const { setStage, skipToDemo, tc } = useStore();
   const featured = ["o_saranda_wk", "o_gym_month", "o_skillup", "o_spa_day"];
 
   return (
     <div className="min-h-screen">
-      {/* nav */}
-      <nav className="sticky top-0 z-50 glass border-b border-perx-line">
+      {/* nav — solid, not glassy */}
+      <nav className="sticky top-0 z-50 border-b border-perx-line bg-white">
         <div className="mx-auto flex max-w-6xl items-center px-5 py-3.5">
           <div className="flex items-center gap-2.5">
-            <div className="grid h-9 w-9 place-items-center rounded-2xl grad-grape font-display text-base font-extrabold text-white">P</div>
+            <div className="grid h-9 w-9 place-items-center rounded-2xl bg-perx-ink font-display text-base font-extrabold text-white">P</div>
             <span className="font-display text-lg font-extrabold tracking-tight">PERX</span>
           </div>
           <div className="ml-auto flex items-center gap-2">
-            <button onClick={() => setStage("auth")} className="pop-btn px-4 py-2 text-sm font-semibold text-perx-ink hover:bg-perx-ink/[0.04]">Log in</button>
-            <button onClick={() => setStage("auth")} className="pop-btn grad-grape px-4 py-2 text-sm font-semibold text-white shadow-pop-sm">Sign up</button>
+            <button onClick={() => setStage("auth")} className="pop-btn px-4 py-2 text-sm font-semibold text-perx-ink hover:bg-perx-ink/[0.05]">Log in</button>
+            <button onClick={() => setStage("auth")} className="pop-btn bg-perx-ink px-4 py-2 text-sm font-semibold text-white">Sign up</button>
           </div>
         </div>
       </nav>
 
-      {/* hero */}
-      <section className="relative overflow-hidden">
-        <div className="pointer-events-none absolute -left-32 top-0 h-96 w-96 rounded-full bg-perx-indigo/15 blur-3xl" />
-        <div className="pointer-events-none absolute -right-20 top-20 h-80 w-80 rounded-full bg-perx-purple/15 blur-3xl" />
-        <div className="mx-auto max-w-6xl px-5 pb-16 pt-20 text-center">
-          <motion.span {...fade()} className="inline-flex items-center gap-2 rounded-full border border-perx-line bg-white/70 px-4 py-1.5 text-sm font-semibold text-perx-purple">
-            ✦ AI-native benefits · Built for Albania
+      {/* HERO — pink band */}
+      <section className="relative overflow-hidden" style={{ backgroundColor: BAND.pink }}>
+        <Blob variant="bowtie" color="#F7D14B" className="left-6 top-28 h-16 w-12 rotate-12 md:left-16" />
+        <Blob variant="splash" color="#7ED0A0" className="right-8 top-40 h-20 w-24 md:right-24" />
+        <Blob variant="splash" color="#C9B8F2" className="-bottom-6 left-1/4 h-16 w-20 opacity-80" />
+        <div className="mx-auto max-w-6xl px-5 pb-20 pt-20 text-center">
+          <motion.span {...fade()} className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-1.5 text-sm font-semibold text-perx-ink shadow-sm">
+            <Ico name="sparkles" className="h-4 w-4 text-perx-indigo" /> {tc.landingBadge}
           </motion.span>
-          <motion.h1 {...fade(0.05)} className="mx-auto mt-6 max-w-3xl font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-perx-ink md:text-6xl">
-            The perks employees <span className="text-grad">actually want.</span>
+          <motion.h1 {...fade(0.05)} className="mx-auto mt-6 max-w-3xl font-display text-4xl font-extrabold leading-[1.02] tracking-tight text-perx-ink md:text-6xl">
+            {tc.heroLead} <span className="text-grad">{tc.heroEmph}</span>
           </motion.h1>
-          <motion.p {...fade(0.1)} className="mx-auto mt-5 max-w-xl text-lg text-perx-muted">
-            A benefits marketplace people open every week — not once a quarter. Your company funds it, you just pick what you love.
+          <motion.p {...fade(0.1)} className="mx-auto mt-5 max-w-xl text-lg text-perx-ink/70">
+            {tc.heroSub}
           </motion.p>
           <motion.div {...fade(0.15)} className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <button onClick={() => setStage("auth")} className="pop-btn grad-grape px-7 py-3.5 text-base font-semibold text-white shadow-glow">
-              Get started — it's 2 min
+            <button onClick={() => setStage("auth")} className="pop-btn bg-perx-ink px-7 py-3.5 text-base font-semibold text-white">
+              {tc.ctaPrimary}
             </button>
-            <button onClick={() => skipToDemo("employee")} className="pop-btn border border-perx-line bg-white px-7 py-3.5 text-base font-semibold text-perx-ink shadow-soft">
-              ▶ Skip to live demo
+            <button onClick={() => skipToDemo("employee")} className="pop-btn inline-flex items-center gap-2 bg-white px-7 py-3.5 text-base font-semibold text-perx-ink shadow-sm">
+              <Ico name="play" className="h-4 w-4" /> {tc.ctaSecondary}
             </button>
           </motion.div>
-          <motion.p {...fade(0.2)} className="mt-4 text-xs text-perx-muted">Trusted by forward-thinking teams in Tirana · Albanian Lek · Shqip & English</motion.p>
+          <motion.p {...fade(0.2)} className="mt-4 text-xs font-medium text-perx-ink/50">Trusted by forward-thinking teams in Tirana · Albanian Lek · Shqip &amp; English</motion.p>
 
-          {/* floating featured strip */}
           <motion.div {...fade(0.25)} className="mx-auto mt-14 grid max-w-4xl grid-cols-2 gap-3 md:grid-cols-4">
-            {featured.map((id, i) => {
+            {featured.map((id) => {
               const o = OFFER_MAP[id];
               return (
-                <motion.div key={id} animate={{ y: [0, -6, 0] }} transition={{ duration: 4 + i, repeat: Infinity, ease: "easeInOut" }}
-                  className="card p-4 text-left">
-                  <div className="text-2xl">{PROVIDER_MAP[o.providerId]?.emoji}</div>
-                  <p className="mt-2 text-sm font-bold text-perx-ink">{o.title}</p>
-                  <p className="text-xs text-perx-muted">{PROVIDER_MAP[o.providerId]?.name}</p>
+                <div key={id} className="rounded-3xl border border-black/5 bg-white p-4 text-left">
+                  <div className="grid h-10 w-10 place-items-center rounded-xl bg-perx-indigo/10 text-perx-indigo"><ProviderIcon id={o.providerId} className="h-5 w-5" /></div>
+                  <p className="mt-3 text-sm font-bold text-perx-ink">{o.title}</p>
+                  <p className="text-xs text-perx-ink/50">{PROVIDER_MAP[o.providerId]?.name}</p>
                   <p className="mt-1 font-display text-sm font-bold text-perx-indigo"><Money all={o.priceALL} /></p>
-                </motion.div>
+                </div>
               );
             })}
           </motion.div>
         </div>
       </section>
 
-      {/* how it works */}
-      <section className="mx-auto max-w-6xl px-5 py-16">
-        <motion.h2 {...fade()} className="text-center font-display text-3xl font-extrabold tracking-tight">How PERX works</motion.h2>
-        <div className="mt-10 grid gap-5 md:grid-cols-3">
-          {[
-            { n: "01", t: "Pick what you love", d: "Browse a marketplace of local deals and AI-built bundles. Add them to a selection.", icon: "🛍️" },
-            { n: "02", t: "Your employer approves", d: "One tap funds it. The money never passes through your hands.", icon: "✅" },
-            { n: "03", t: "Enjoy — we pay providers", d: "Payment routes directly to each gym, clinic, or travel agency. Done.", icon: "✨" },
-          ].map((s, i) => (
-            <motion.div key={s.n} {...fade(i * 0.08)} className="card p-6">
-              <div className="flex items-center justify-between">
-                <span className="grid h-12 w-12 place-items-center rounded-2xl bg-perx-indigo/10 text-2xl">{s.icon}</span>
-                <span className="font-display text-2xl font-extrabold text-perx-line">{s.n}</span>
-              </div>
-              <h3 className="mt-4 font-display text-lg font-bold">{s.t}</h3>
-              <p className="mt-1 text-sm text-perx-muted">{s.d}</p>
-            </motion.div>
-          ))}
+      {/* HOW IT WORKS — white band */}
+      <section style={{ backgroundColor: BAND.white }}>
+        <div className="mx-auto max-w-6xl px-5 py-20">
+          <motion.h2 {...fade()} className="text-center font-display text-3xl font-extrabold tracking-tight md:text-4xl">{tc.howTitle}</motion.h2>
+          <div className="mt-12 grid gap-5 md:grid-cols-3">
+            {tc.steps.map((s, i) => (
+              <motion.div key={i} {...fade(i * 0.08)} className="rounded-4xl border border-perx-line bg-white p-7">
+                <div className="flex items-center justify-between">
+                  <span className="grid h-12 w-12 place-items-center rounded-2xl text-white" style={{ backgroundColor: ["#F2683C", "#2DB390", "#9F7AEA"][i] }}><Ico name={["cart", "badge-check", "sparkles"][i]} className="h-6 w-6" /></span>
+                  <span className="font-display text-3xl font-extrabold text-perx-line">{String(i + 1).padStart(2, "0")}</span>
+                </div>
+                <h3 className="mt-5 font-display text-xl font-bold">{s.t}</h3>
+                <p className="mt-1.5 text-sm text-perx-ink/60">{s.d}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* three audiences */}
-      <section className="mx-auto max-w-6xl px-5 py-10">
-        <div className="grid gap-5 md:grid-cols-3">
-          {[
-            { t: "For employees", grad: "grad-grape", d: "Benefits you'll actually use. Personalized picks, streaks, rewards, and an AI concierge in your pocket.", points: ["AI concierge", "Smart bundles", "XP & rewards", "Year in Benefits"] },
-            { t: "For employers", grad: "grad-blue", d: "Compete on what you offer your people. Approve in a tap, see what's loved, what goes unused.", points: ["1-tap approvals", "AI insights", "Budget control", "Team challenges"] },
-            { t: "For providers", grad: "grad-emerald", d: "List your deals to thousands of employees. Get paid directly on approval.", points: ["Reach employees", "Manage offers", "Live analytics", "Instant payouts"] },
-          ].map((a, i) => (
-            <motion.div key={a.t} {...fade(i * 0.08)} className={`overflow-hidden rounded-3xl ${a.grad} p-6 text-white shadow-pop`}>
-              <h3 className="font-display text-xl font-extrabold">{a.t}</h3>
-              <p className="mt-2 text-sm text-white/80">{a.d}</p>
-              <ul className="mt-4 space-y-1.5 text-sm">
-                {a.points.map((p) => <li key={p} className="flex items-center gap-2"><span>›</span>{p}</li>)}
-              </ul>
-            </motion.div>
-          ))}
+      {/* AUDIENCES — mint band */}
+      <section className="relative overflow-hidden" style={{ backgroundColor: BAND.mint }}>
+        <Blob variant="bowtie" color="#F7D14B" className="right-10 top-12 h-14 w-10 -rotate-12" />
+        <div className="mx-auto max-w-6xl px-5 py-20">
+          <motion.h2 {...fade()} className="text-center font-display text-3xl font-extrabold tracking-tight md:text-4xl">One platform, three ways in</motion.h2>
+          <div className="mt-12 grid gap-5 md:grid-cols-3">
+            {[
+              { t: "For employees", color: "#F2683C", icon: "user", d: "Benefits you'll actually use. Personalized picks, streaks, rewards, and an AI concierge in your pocket.", points: ["AI concierge", "Smart bundles", "XP & rewards", "Year in Benefits"] },
+              { t: "For employers", color: "#2DB390", icon: "employer", d: "Compete on what you offer your people. Approve in a tap, see what's loved, what goes unused.", points: ["1-tap approvals", "AI insights", "Budget control", "Team challenges"] },
+              { t: "For providers", color: "#9F7AEA", icon: "provider", d: "List your deals to thousands of employees. Get paid directly on approval.", points: ["Reach employees", "Manage offers", "Live analytics", "Instant payouts"] },
+            ].map((a, i) => (
+              <motion.div key={a.t} {...fade(i * 0.08)} className="rounded-4xl border border-black/5 bg-white p-7">
+                <span className="grid h-12 w-12 place-items-center rounded-2xl text-white" style={{ backgroundColor: a.color }}><Ico name={a.icon} className="h-6 w-6" /></span>
+                <h3 className="mt-4 font-display text-xl font-extrabold">{a.t}</h3>
+                <p className="mt-2 text-sm text-perx-ink/60">{a.d}</p>
+                <ul className="mt-4 space-y-2 text-sm">
+                  {a.points.map((p) => (
+                    <li key={p} className="flex items-center gap-2 text-perx-ink/80"><Ico name="check" className="h-4 w-4" style={{ color: a.color }} />{p}</li>
+                  ))}
+                </ul>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* AI band */}
-      <section className="mx-auto max-w-6xl px-5 py-16">
-        <motion.div {...fade()} className="relative overflow-hidden rounded-4xl grad-hero p-10 text-center text-white shadow-glow">
-          <div className="pointer-events-none absolute -right-16 -top-16 h-60 w-60 rounded-full bg-white/10 blur-3xl" />
-          <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold">✦ Powered by Claude</span>
-          <h2 className="mx-auto mt-4 max-w-2xl font-display text-3xl font-extrabold tracking-tight md:text-4xl">
-            “Find me something relaxing under 5,000 L.”
-          </h2>
-          <p className="mx-auto mt-3 max-w-xl text-white/80">Just talk to PERX. It understands your intent, respects your budget, and bundles offers from multiple providers into one perfect package.</p>
-          <button onClick={() => setStage("auth")} className="pop-btn mt-7 bg-white px-7 py-3.5 text-base font-semibold text-perx-indigo shadow-pop-sm">Try the concierge</button>
-        </motion.div>
-      </section>
-
-      {/* providers marquee */}
-      <section className="mx-auto max-w-6xl px-5 pb-16">
-        <p className="text-center text-sm font-semibold uppercase tracking-wide text-perx-muted">Local providers, ready to go</p>
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
-          {PROVIDERS.map((p) => (
-            <span key={p.id} className="flex items-center gap-2 rounded-full border border-perx-line bg-white px-4 py-2 text-sm font-medium text-perx-ink shadow-soft">
-              <span>{p.emoji}</span> {p.name}
-            </span>
-          ))}
+      {/* AI — coral band */}
+      <section style={{ backgroundColor: BAND.coral }}>
+        <div className="mx-auto max-w-4xl px-5 py-20 text-center text-white">
+          <motion.span {...fade()} className="inline-flex items-center gap-2 rounded-full bg-white/25 px-3 py-1 text-xs font-bold uppercase tracking-wide"><Ico name="sparkles" className="h-3.5 w-3.5" /> {tc.aiKicker}</motion.span>
+          <motion.h2 {...fade(0.05)} className="mx-auto mt-5 max-w-2xl font-display text-3xl font-extrabold tracking-tight md:text-5xl">{tc.aiQuote}</motion.h2>
+          <motion.p {...fade(0.1)} className="mx-auto mt-4 max-w-xl text-white/90">{tc.aiSub}</motion.p>
+          <motion.button {...fade(0.15)} onClick={() => setStage("auth")} className="pop-btn mt-8 bg-perx-ink px-7 py-3.5 text-base font-semibold text-white">{tc.aiCta}</motion.button>
         </div>
       </section>
 
-      {/* footer cta */}
-      <section className="mx-auto max-w-6xl px-5 pb-24 text-center">
-        <motion.div {...fade()}>
-          <h2 className="font-display text-3xl font-extrabold tracking-tight">Ready to actually enjoy your benefits?</h2>
-          <button onClick={() => setStage("auth")} className="pop-btn mt-6 grad-grape px-8 py-4 text-base font-semibold text-white shadow-glow">Create your free account</button>
-        </motion.div>
+      {/* PROVIDERS — white band */}
+      <section style={{ backgroundColor: BAND.white }}>
+        <div className="mx-auto max-w-6xl px-5 py-16">
+          <p className="text-center text-sm font-bold uppercase tracking-wide text-perx-ink/50">{tc.providersKicker}</p>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            {PROVIDERS.map((p) => (
+              <span key={p.id} className="flex items-center gap-2 rounded-full border border-perx-line bg-white px-4 py-2 text-sm font-semibold text-perx-ink">
+                <ProviderIcon id={p.id} className="h-4 w-4 text-perx-indigo" /> {p.name}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER CTA — cream band */}
+      <section className="relative overflow-hidden" style={{ backgroundColor: BAND.cream }}>
+        <Blob variant="splash" color="#7ED0A0" className="left-10 top-10 h-16 w-20" />
+        <Blob variant="bowtie" color="#F2683C" className="bottom-10 right-12 h-14 w-10 rotate-6 opacity-90" />
+        <div className="mx-auto max-w-6xl px-5 py-24 text-center">
+          <motion.h2 {...fade()} className="font-display text-3xl font-extrabold tracking-tight md:text-5xl">{tc.footerTitle}</motion.h2>
+          <motion.button {...fade(0.1)} onClick={() => setStage("auth")} className="pop-btn mt-8 bg-perx-ink px-8 py-4 text-base font-semibold text-white">{tc.footerCta}</motion.button>
+        </div>
       </section>
     </div>
   );

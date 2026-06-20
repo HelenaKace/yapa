@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+const v = (name) => `rgb(var(${name}) / <alpha-value>)`;
+
 module.exports = {
   darkMode: "class",
   content: [
@@ -9,28 +11,28 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Premium palette: deep indigo + electric purple, emerald & gold accents.
-        // Legacy token names are remapped so existing classes resolve to the new system.
+        // All tokens resolve to CSS variables (see globals.css) so themes recolor
+        // everything. Default (Aurora) values equal the original premium palette.
         perx: {
-          indigo: "#4F46E5",
-          purple: "#7C3AED",
-          violet: "#8B5CF6",
-          emerald: "#10B981",
-          gold: "#E0A82E",
-          ink: "#16131F",
-          muted: "#6B6880",
-          line: "#ECEAF3",
-          bg: "#FBFBFD",
-          surface: "#FFFFFF",
-          // legacy aliases -> premium tones
-          orange: "#4F46E5",
-          coral: "#8B5CF6",
-          pink: "#7C3AED",
-          rose: "#8B5CF6",
-          blue: "#4F46E5",
-          sky: "#10B981",
-          yellow: "#E0A82E",
-          cloud: "#FBFBFD",
+          indigo: v("--c-primary"),
+          blue: v("--c-primary"),
+          purple: v("--c-primary2"),
+          violet: v("--c-violet"),
+          emerald: v("--c-accent"),
+          sky: v("--c-accent"),
+          gold: v("--c-gold"),
+          yellow: v("--c-gold"),
+          ink: v("--c-ink"),
+          muted: v("--c-muted"),
+          line: v("--c-line"),
+          bg: v("--c-bg"),
+          cloud: v("--c-bg"),
+          surface: v("--c-surface"),
+          // legacy aliases
+          orange: v("--c-primary"),
+          coral: v("--c-violet"),
+          pink: v("--c-primary2"),
+          rose: v("--c-violet"),
         },
       },
       fontFamily: {
@@ -53,9 +55,6 @@ module.exports = {
         float: {
           "0%,100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-8px)" },
-        },
-        shimmer: {
-          "100%": { transform: "translateX(100%)" },
         },
         reveal: {
           "0%": { transform: "scale(0.6)", opacity: "0" },

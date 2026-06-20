@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useStore } from "@/app/store-context";
 import { OFFER_MAP, PACKAGE_MAP, PROVIDER_MAP, packagePriceALL } from "@/lib/seed";
 import { Money } from "./ui";
+import { Ico, ProviderIcon, PackageIcon } from "./icons";
 
 export function CartButton() {
   const { cart, role } = useStore();
@@ -18,7 +19,7 @@ export function CartButton() {
             onClick={() => setOpen(true)}
             className="pop-btn fixed bottom-6 right-6 z-[70] flex items-center gap-2 grad-orange px-5 py-3.5 text-white shadow-pop"
           >
-            <span className="text-lg">🛒</span>
+            <Ico name="cart" className="h-5 w-5" />
             <span className="font-semibold">{cart.length}</span>
             <span className="hidden sm:inline">· <Money all={useCartTotal()} /></span>
           </motion.button>
@@ -62,8 +63,8 @@ function CartDrawer({ open, onClose }) {
             transition={{ type: "spring", damping: 28, stiffness: 260 }}
           >
             <div className="flex items-center justify-between p-5 pb-2">
-              <h2 className="font-display text-xl font-bold">🛒 Your selection</h2>
-              <button onClick={onClose} className="pop-btn grid h-8 w-8 place-items-center bg-perx-ink/5">✕</button>
+              <h2 className="flex items-center gap-2 font-display text-xl font-bold"><Ico name="cart" className="h-5 w-5 text-perx-purple" /> Your selection</h2>
+              <button onClick={onClose} className="pop-btn grid h-8 w-8 place-items-center bg-perx-ink/5"><Ico name="close" className="h-4 w-4" /></button>
             </div>
 
             <div className="no-scrollbar max-h-[45vh] space-y-2 overflow-y-auto px-5">
@@ -74,15 +75,15 @@ function CartDrawer({ open, onClose }) {
                 const price = isPkg ? packagePriceALL(item) : item?.priceALL;
                 return (
                   <div key={c.kind + c.id} className="flex items-center gap-3 rounded-2xl bg-white/80 p-3 shadow-pop-sm">
-                    <div className={`grid h-11 w-11 place-items-center rounded-xl text-xl ${isPkg ? "grad-grape" : "grad-blue"} text-white`}>
-                      {isPkg ? item?.emoji : PROVIDER_MAP[item?.providerId]?.emoji}
+                    <div className={`grid h-11 w-11 place-items-center rounded-xl ${isPkg ? "grad-grape" : "grad-blue"} text-white`}>
+                      {isPkg ? <PackageIcon theme={item?.theme} className="h-5 w-5" /> : <ProviderIcon id={item?.providerId} className="h-5 w-5" />}
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold">{item?.title}</p>
                       <p className="text-xs text-perx-ink/50">{isPkg ? `Bundle · ${item?.offerIds.length} items` : PROVIDER_MAP[item?.providerId]?.name}</p>
                     </div>
                     <span className="font-display text-sm font-semibold"><Money all={price} /></span>
-                    <button onClick={() => removeFromCart(c.kind, c.id)} className="text-perx-ink/30 hover:text-perx-pink">✕</button>
+                    <button onClick={() => removeFromCart(c.kind, c.id)} className="text-perx-ink/30 hover:text-perx-purple"><Ico name="close" className="h-4 w-4" /></button>
                   </div>
                 );
               })}
@@ -91,7 +92,7 @@ function CartDrawer({ open, onClose }) {
             <div className="space-y-3 p-5">
               {cart.length > 0 && (
                 <div className="flex items-center gap-1.5 text-xs font-semibold text-perx-blue">
-                  🔗 routes payment to {providers.size} provider{providers.size > 1 ? "s" : ""} on approval
+                  <Ico name="link" className="h-3.5 w-3.5" /> routes payment to {providers.size} provider{providers.size > 1 ? "s" : ""} on approval
                 </div>
               )}
               <div className="flex items-center justify-between">
@@ -106,9 +107,9 @@ function CartDrawer({ open, onClose }) {
               <button
                 onClick={submit}
                 disabled={cart.length === 0 || overBudget}
-                className="pop-btn w-full grad-orange py-3.5 text-base font-semibold text-white shadow-pop disabled:opacity-40"
+                className="pop-btn inline-flex w-full items-center justify-center gap-2 grad-orange py-3.5 text-base font-semibold text-white shadow-pop disabled:opacity-40"
               >
-                🚀 Submit for approval
+                <Ico name="send" className="h-4 w-4" /> Submit for approval
               </button>
               <p className="text-center text-[11px] text-perx-ink/40">
                 Your employer approves, then we pay each provider directly. Money never touches your hands.

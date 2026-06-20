@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useStore } from "@/app/store-context";
 import { OFFER_MAP, PROVIDER_MAP, CATEGORY_MAP, PACKAGE_MAP, packagePriceALL, packageRawPriceALL } from "@/lib/seed";
 import { Money, Pill } from "./ui";
+import { Ico, PackageIcon } from "./icons";
 
 // soft tinted icon tiles per category — premium, restrained
 const CAT_TILE = {
@@ -29,11 +30,11 @@ export function OfferCard({ offerId, reason, compact }) {
     <motion.div layout whileHover={{ y: -3 }} transition={{ type: "spring", stiffness: 300, damping: 24 }}
       className="card flex flex-col p-5 hover:shadow-pop-sm">
       <div className="mb-3 flex items-start justify-between">
-        <div className={`grid h-11 w-11 place-items-center rounded-2xl text-xl ${CAT_TILE[o.category] || "bg-perx-ink/5"}`}>
-          {prov?.emoji || cat?.emoji}
+        <div className={`grid h-11 w-11 place-items-center rounded-2xl ${CAT_TILE[o.category] || "bg-perx-ink/5"}`}>
+          <Ico name={o.category} className="h-5 w-5" />
         </div>
         <div className="flex flex-col items-end gap-1.5">
-          {o.popular && <Pill className="!bg-perx-gold/12 !text-perx-gold">Popular</Pill>}
+          {o.popular && <Pill className="!bg-perx-gold/12 !text-perx-gold"><Ico name="flame" className="h-3 w-3" /> Popular</Pill>}
           <span className="text-[11px] font-medium text-perx-muted">{cat?.en}</span>
         </div>
       </div>
@@ -42,16 +43,16 @@ export function OfferCard({ offerId, reason, compact }) {
       {!compact && <p className="mt-2 text-sm leading-relaxed text-perx-muted">{o.desc}</p>}
       {reason && (
         <div className="mt-2.5 inline-flex w-fit items-center gap-1.5 rounded-full bg-perx-purple/8 px-2.5 py-1 text-[11px] font-semibold text-perx-purple">
-          <span className="text-perx-purple">✦</span> {reason}
+          <Ico name="sparkles" className="h-3.5 w-3.5" /> {reason}
         </div>
       )}
       <div className="mt-4 flex items-center justify-between border-t border-perx-line pt-3">
         <span className="font-display text-lg font-bold text-perx-ink"><Money all={o.priceALL} /></span>
         <button
           onClick={() => toggleCart("offer", o.id)}
-          className={`pop-btn px-4 py-2 text-sm ${added ? "bg-perx-ink text-white" : "grad-orange text-white shadow-pop-sm"}`}
+          className={`pop-btn inline-flex items-center gap-1.5 px-4 py-2 text-sm ${added ? "bg-perx-ink text-white" : "grad-orange text-white shadow-pop-sm"}`}
         >
-          {added ? "Added ✓" : "Add"}
+          {added ? <><Ico name="check" className="h-4 w-4" /> Added</> : "Add"}
         </button>
       </div>
     </motion.div>
@@ -72,8 +73,8 @@ export function PackageCard({ packageId, large }) {
       className="relative overflow-hidden rounded-3xl border border-perx-line bg-white p-6 shadow-soft hover:shadow-pop-sm">
       <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-perx-purple/[0.07] blur-2xl" />
       <div className="flex items-center justify-between">
-        <div className="grid h-12 w-12 place-items-center rounded-2xl grad-grape text-2xl">{pkg.emoji}</div>
-        {pkg.seasonal && <Pill className="!bg-perx-gold/12 !text-perx-gold">✦ {pkg.seasonalLabel || "Limited drop"}</Pill>}
+        <div className="grid h-12 w-12 place-items-center rounded-2xl grad-grape text-white"><PackageIcon theme={pkg.theme} className="h-6 w-6" /></div>
+        {pkg.seasonal && <Pill className="!bg-perx-gold/12 !text-perx-gold"><Ico name="sun" className="h-3 w-3" /> {pkg.seasonalLabel || "Limited drop"}</Pill>}
       </div>
       <h3 className="mt-3 font-display text-xl font-bold text-perx-ink">{pkg.title}</h3>
       <p className="text-sm text-perx-muted">{pkg.blurb}</p>
@@ -85,7 +86,7 @@ export function PackageCard({ packageId, large }) {
         ))}
       </div>
       <div className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-semibold text-perx-indigo">
-        <span>⛓</span> spans {providers.length} providers · save 10%
+        <Ico name="link" className="h-3.5 w-3.5" /> spans {providers.length} providers · save 10%
       </div>
       <div className="mt-4 flex items-center justify-between border-t border-perx-line pt-3">
         <div className="flex items-baseline gap-2">
@@ -94,9 +95,9 @@ export function PackageCard({ packageId, large }) {
         </div>
         <button
           onClick={() => toggleCart("package", pkg.id)}
-          className={`pop-btn px-5 py-2.5 text-sm ${added ? "bg-perx-ink text-white" : "grad-grape text-white shadow-pop-sm"}`}
+          className={`pop-btn inline-flex items-center gap-1.5 px-5 py-2.5 text-sm ${added ? "bg-perx-ink text-white" : "grad-grape text-white shadow-pop-sm"}`}
         >
-          {added ? "Added ✓" : "Add bundle"}
+          {added ? <><Ico name="check" className="h-4 w-4" /> Added</> : "Add bundle"}
         </button>
       </div>
     </motion.div>

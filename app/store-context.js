@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { OFFER_MAP, PACKAGE_MAP, packagePriceALL, CURRENT_USER_ID, EMPLOYEE_MAP } from "@/lib/seed";
+import { DEFAULT_THEME, themeCopy } from "@/lib/themes";
 
 const StoreCtx = createContext(null);
 export const useStore = () => useContext(StoreCtx);
@@ -27,6 +28,7 @@ export function StoreProvider({ children }) {
   const [role, setRole] = useState("employee");
   const [lang, setLang] = useState("en");
   const [currency, setCurrency] = useState("ALL");
+  const [theme, setTheme] = useState(DEFAULT_THEME);
   const [employeeId] = useState(CURRENT_USER_ID);
   const [me, setMe] = useState(null);
   const [full, setFull] = useState(null);
@@ -48,6 +50,7 @@ export function StoreProvider({ children }) {
         if (s.role) setRole(s.role);
         if (s.profile) setProfile(s.profile);
         if (s.onboardingDone) setOnboardingDone(s.onboardingDone);
+        if (s.theme) setTheme(s.theme);
       }
     } catch {}
   }, []);
@@ -56,9 +59,16 @@ export function StoreProvider({ children }) {
   useEffect(() => {
     if (!mounted) return;
     try {
-      localStorage.setItem(SESSION_KEY, JSON.stringify({ stage, account, role, profile, onboardingDone }));
+      localStorage.setItem(SESSION_KEY, JSON.stringify({ stage, account, role, profile, onboardingDone, theme }));
     } catch {}
-  }, [mounted, stage, account, role, profile, onboardingDone]);
+  }, [mounted, stage, account, role, profile, onboardingDone, theme]);
+
+  // apply theme to <html> for the CSS-variable cascade
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      document.documentElement.setAttribute("data-theme", theme);
+    }
+  }, [theme]);
 
   const refresh = useCallback(async () => {
     const r = await fetch(`/api/state?employeeId=${employeeId}`, { cache: "no-store" });
@@ -122,7 +132,7 @@ export function StoreProvider({ children }) {
   const cartTotal = cart.reduce((s, it) => s + priceOf(it), 0);
 
   const fireRocket = useCallback((payload) => {
-    setRocket(payload || { emoji: "✓", title: "Done!" });
+    setRocket(payload || { icon: "check", title: "Done!" });
     setTimeout(() => setRocket(null), 2400);
   }, []);
   const showToast = useCallback((text, kind = "ok") => {
@@ -140,7 +150,7 @@ export function StoreProvider({ children }) {
     });
     clearCart();
     await refresh();
-    fireRocket({ emoji: "🎟️", title: "Sent for approval", sub: "We'll ping People Ops to confirm" });
+    fireRocket({ icon: "send", title: "Sent for approval", sub: "We'll ping People Ops to confirm" });
     showToast("Selection submitted for approval");
   }, [cart, employeeId, clearCart, refresh, fireRocket, showToast]);
 
@@ -152,7 +162,7 @@ export function StoreProvider({ children }) {
     });
     await refresh();
     if (decision === "approve") {
-      fireRocket({ emoji: "✓", title: "Approved", sub: "Payment routed to providers" });
+      fireRocket({ icon: "check", title: "Approved", sub: "Payment routed to providers" });
       showToast("Payment routed to providers");
     } else {
       showToast("Request declined", "warn");
@@ -174,6 +184,8 @@ export function StoreProvider({ children }) {
     role, setRole,
     lang, setLang,
     currency, setCurrency,
+    theme, setTheme,
+    tc: themeCopy(theme),
     employeeId,
     user: EMPLOYEE_MAP[employeeId],
     me, full, refresh,

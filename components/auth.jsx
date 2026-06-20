@@ -2,11 +2,12 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useStore } from "@/app/store-context";
+import { Ico } from "./icons";
 
 const ROLES = [
-  { id: "employee", title: "Employee", desc: "I want to discover and use company benefits.", grad: "grad-grape", icon: "🧑" },
-  { id: "employer", title: "Employer", desc: "I want to provide benefits to my team.", grad: "grad-blue", icon: "🏢" },
-  { id: "provider", title: "Service Provider", desc: "I want to offer services and deals.", grad: "grad-emerald", icon: "🏪" },
+  { id: "employee", title: "Employee", desc: "I want to discover and use company benefits.", grad: "grad-grape", icon: "user" },
+  { id: "employer", title: "Employer", desc: "I want to provide benefits to my team.", grad: "grad-blue", icon: "employer" },
+  { id: "provider", title: "Service Provider", desc: "I want to offer services and deals.", grad: "grad-emerald", icon: "provider" },
 ];
 
 export function Auth() {
@@ -41,7 +42,7 @@ export function Auth() {
           <div className="mt-10 space-y-3">
             {["AI-personalized home feed", "Bundles across multiple providers", "Earn XP, levels & badges"].map((t) => (
               <div key={t} className="flex items-center gap-3 text-sm">
-                <span className="grid h-7 w-7 place-items-center rounded-full bg-white/15">✓</span>{t}
+                <span className="grid h-7 w-7 place-items-center rounded-full bg-white/15"><Ico name="check" className="h-4 w-4" /></span>{t}
               </div>
             ))}
           </div>
@@ -51,7 +52,7 @@ export function Auth() {
       {/* right form panel */}
       <div className="flex items-center justify-center px-5 py-12">
         <div className="w-full max-w-sm">
-          <button onClick={() => setStage("landing")} className="mb-6 text-sm font-medium text-perx-muted hover:text-perx-ink lg:hidden">← Back</button>
+          <button onClick={() => setStage("landing")} className="mb-6 inline-flex items-center gap-1 text-sm font-medium text-perx-muted hover:text-perx-ink lg:hidden"><Ico name="back" className="h-4 w-4" /> Back</button>
 
           <AnimatePresence mode="wait">
             {step === 0 ? (
@@ -70,7 +71,7 @@ export function Auth() {
                 </button>
 
                 <button className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-perx-line bg-white py-3 text-sm font-semibold text-perx-ink hover:bg-perx-bg">
-                  <span>🔵</span> Continue with Google
+                  <Ico name="globe" className="h-4 w-4" /> Continue with Google
                 </button>
 
                 <p className="mt-5 text-center text-sm text-perx-muted">
@@ -88,21 +89,21 @@ export function Auth() {
                   {ROLES.map((r) => (
                     <button key={r.id} onClick={() => setRole(r.id)}
                       className={`flex w-full items-center gap-3 rounded-2xl border-2 p-4 text-left transition-all ${role === r.id ? "border-perx-purple bg-perx-purple/[0.04]" : "border-perx-line bg-white hover:border-perx-purple/40"}`}>
-                      <span className={`grid h-11 w-11 place-items-center rounded-2xl ${r.grad} text-xl text-white`}>{r.icon}</span>
+                      <span className={`grid h-11 w-11 place-items-center rounded-2xl ${r.grad} text-white`}><Ico name={r.icon} className="h-5 w-5" /></span>
                       <span className="flex-1">
                         <span className="block font-display font-bold text-perx-ink">{r.title}</span>
                         <span className="block text-xs text-perx-muted">{r.desc}</span>
                       </span>
                       <span className={`grid h-5 w-5 place-items-center rounded-full border-2 ${role === r.id ? "border-perx-purple bg-perx-purple text-white" : "border-perx-line"}`}>
-                        {role === r.id && "✓"}
+                        {role === r.id && <Ico name="check" className="h-3 w-3" />}
                       </span>
                     </button>
                   ))}
                 </div>
-                <button onClick={finish} className="pop-btn mt-6 w-full grad-grape py-3.5 text-sm font-semibold text-white shadow-pop-sm">
-                  {role === "employee" ? "Continue to personalization →" : "Enter dashboard →"}
+                <button onClick={finish} className="pop-btn mt-6 inline-flex w-full items-center justify-center gap-1.5 grad-grape py-3.5 text-sm font-semibold text-white shadow-pop-sm">
+                  {role === "employee" ? "Continue to personalization" : "Enter dashboard"} <Ico name="arrow" className="h-4 w-4" />
                 </button>
-                <button onClick={() => setStep(0)} className="mt-3 w-full text-center text-sm font-medium text-perx-muted hover:text-perx-ink">← Back</button>
+                <button onClick={() => setStep(0)} className="mt-3 inline-flex w-full items-center justify-center gap-1 text-center text-sm font-medium text-perx-muted hover:text-perx-ink"><Ico name="back" className="h-4 w-4" /> Back</button>
               </motion.div>
             )}
           </AnimatePresence>

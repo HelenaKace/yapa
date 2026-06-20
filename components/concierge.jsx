@@ -4,16 +4,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useStore } from "@/app/store-context";
 import { OFFER_MAP, PROVIDER_MAP } from "@/lib/seed";
 import { Money, AiBadge } from "./ui";
-
-const SUGGESTIONS = [
-  "Find me something relaxing under 5,000 L",
-  "I'm burnt out and need a reset 🧖",
-  "Plan a fun weekend by the sea",
-  "Help me grow my career this quarter",
-];
+import { Ico, ProviderIcon } from "./icons";
 
 export function Concierge() {
-  const { conciergeOpen, setConciergeOpen, lang, toggleCart, inCart, user } = useStore();
+  const { conciergeOpen, setConciergeOpen, lang, toggleCart, inCart, user, tc } = useStore();
+  const SUGGESTIONS = tc.suggestions;
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -68,15 +63,15 @@ export function Concierge() {
             <div className="grad-grape p-5 text-white">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="text-2xl">✦</span>
+                  <Ico name="sparkles" className="h-6 w-6" />
                   <div>
-                    <h2 className="font-display text-lg font-bold leading-none">PERX Concierge</h2>
-                    <p className="text-xs text-white/70">Your benefits buddy</p>
+                    <h2 className="font-display text-lg font-bold leading-none">{tc.conciergeTitle}</h2>
+                    <p className="text-xs text-white/70">{tc.conciergeSub}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <AiBadge live={aiLive} />
-                  <button onClick={() => setConciergeOpen(false)} className="pop-btn grid h-8 w-8 place-items-center bg-white/20 text-white">✕</button>
+                  <button onClick={() => setConciergeOpen(false)} className="pop-btn grid h-8 w-8 place-items-center bg-white/20 text-white"><Ico name="close" className="h-4 w-4" /></button>
                 </div>
               </div>
             </div>
@@ -85,8 +80,8 @@ export function Concierge() {
             <div ref={scrollRef} className="no-scrollbar flex-1 space-y-4 overflow-y-auto p-4">
               {messages.length === 0 && (
                 <div className="mt-4 text-center">
-                  <div className="mx-auto mb-3 grid h-16 w-16 place-items-center rounded-3xl grad-grape text-3xl shadow-pop">🪄</div>
-                  <p className="font-display text-lg font-semibold">Hi {user?.name?.split(" ")[0]}! What are you in the mood for?</p>
+                  <div className="mx-auto mb-3 grid h-16 w-16 place-items-center rounded-3xl grad-grape text-white shadow-pop"><Ico name="wand" className="h-7 w-7" /></div>
+                  <p className="font-display text-lg font-semibold">Hi {user?.name?.split(" ")[0]} — {tc.conciergeEmpty}</p>
                   <p className="text-sm text-perx-ink/50">I'll find perks that fit your vibe and budget.</p>
                   <div className="mt-4 flex flex-col gap-2">
                     {SUGGESTIONS.map((s) => (
@@ -123,7 +118,7 @@ export function Concierge() {
                   className="flex-1 rounded-full border border-white bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-perx-purple/40"
                 />
                 <button onClick={() => send()} disabled={loading} className="pop-btn grid h-11 w-11 place-items-center grad-grape text-white shadow-pop-sm disabled:opacity-50">
-                  ➤
+                  <Ico name="send" className="h-4 w-4" />
                 </button>
               </div>
             </div>
@@ -157,15 +152,15 @@ function Bubble({ m, toggleCart, inCart }) {
             const added = inCart("offer", id);
             return (
               <div key={id} className="flex items-center gap-3 rounded-2xl bg-white/80 p-2.5 shadow-pop-sm">
-                <div className="grid h-10 w-10 flex-shrink-0 place-items-center rounded-xl grad-blue text-lg text-white">
-                  {PROVIDER_MAP[o.providerId]?.emoji}
+                <div className="grid h-10 w-10 flex-shrink-0 place-items-center rounded-xl grad-blue text-white">
+                  <ProviderIcon id={o.providerId} className="h-5 w-5" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold">{o.title}</p>
                   <p className="text-xs text-perx-ink/50"><Money all={o.priceALL} /> · {PROVIDER_MAP[o.providerId]?.name}</p>
                 </div>
-                <button onClick={() => toggleCart("offer", id)} className={`pop-btn px-3 py-1.5 text-xs ${added ? "bg-perx-ink text-white" : "grad-orange text-white"}`}>
-                  {added ? "✓" : "+ Add"}
+                <button onClick={() => toggleCart("offer", id)} className={`pop-btn inline-flex items-center gap-1 px-3 py-1.5 text-xs ${added ? "bg-perx-ink text-white" : "grad-orange text-white"}`}>
+                  {added ? <Ico name="check" className="h-3.5 w-3.5" /> : <><Ico name="plus" className="h-3.5 w-3.5" /> Add</>}
                 </button>
               </div>
             );
@@ -181,7 +176,7 @@ function BundleCard({ bundle, toggleCart, inCart }) {
   const price = bundle.offerIds.reduce((s, id) => s + (OFFER_MAP[id]?.priceALL || 0), 0);
   return (
     <div className="rounded-3xl grad-grape p-4 text-white shadow-pop">
-      <div className="flex items-center gap-1.5 text-xs font-semibold opacity-90">✦ AI-built bundle</div>
+      <div className="flex items-center gap-1.5 text-xs font-semibold opacity-90"><Ico name="sparkles" className="h-3.5 w-3.5" /> AI-built bundle</div>
       <h4 className="font-display text-lg font-bold">{bundle.title}</h4>
       <div className="mt-2 space-y-1">
         {bundle.offerIds.map((id) => (
@@ -195,9 +190,9 @@ function BundleCard({ bundle, toggleCart, inCart }) {
         <span className="font-display text-lg font-bold"><Money all={price} /></span>
         <button
           onClick={() => bundle.offerIds.forEach((id) => !inCart("offer", id) && toggleCart("offer", id))}
-          className="pop-btn bg-white px-4 py-2 text-sm font-semibold text-perx-purple"
+          className="pop-btn inline-flex items-center gap-1.5 bg-white px-4 py-2 text-sm font-semibold text-perx-purple"
         >
-          Add all ✨
+          <Ico name="check" className="h-4 w-4" /> Add all
         </button>
       </div>
     </div>

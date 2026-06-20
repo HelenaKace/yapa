@@ -2,6 +2,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useStore } from "@/app/store-context";
 import { formatMoney } from "@/lib/format";
+import { Ico } from "./icons";
 
 export function Money({ all, className = "" }) {
   const { currency } = useStore();
@@ -90,14 +91,14 @@ export function RewardReveal() {
             transition={{ type: "spring", damping: 18, stiffness: 240 }}
             className="relative flex flex-col items-center gap-3 rounded-3xl bg-white px-10 py-8 shadow-glow"
           >
-            <div className="relative grid h-16 w-16 place-items-center rounded-full grad-grape text-2xl text-white">
+            <div className="relative grid h-16 w-16 place-items-center rounded-full grad-grape text-white">
               <motion.span
                 className="absolute inset-0 rounded-full"
                 style={{ boxShadow: "0 0 0 0 rgba(124,58,237,0.5)" }}
                 animate={{ boxShadow: ["0 0 0 0 rgba(124,58,237,0.4)", "0 0 0 22px rgba(124,58,237,0)"] }}
                 transition={{ duration: 1.4, repeat: 1 }}
               />
-              {rocket.emoji || "✓"}
+              <Ico name={rocket.icon || "check"} className="h-7 w-7" />
             </div>
             <p className="font-display text-lg font-bold text-perx-ink">{rocket.title}</p>
             {rocket.sub && <p className="-mt-1 text-sm text-perx-muted">{rocket.sub}</p>}

@@ -4,38 +4,39 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useStore } from "@/app/store-context";
 import { OFFER_MAP, PACKAGE_MAP, PROVIDER_MAP } from "@/lib/seed";
 import { Money } from "./ui";
+import { Ico, ProviderIcon, PackageIcon } from "./icons";
 
 const INTERESTS = [
-  { id: "fitness", label: "Fitness", emoji: "💪", cats: ["fitness"] },
-  { id: "travel", label: "Travel", emoji: "✈️", cats: ["travel"] },
-  { id: "wellness", label: "Wellness", emoji: "🧘", cats: ["wellness"] },
-  { id: "food", label: "Food", emoji: "🍽️", cats: ["food"] },
-  { id: "learning", label: "Learning", emoji: "📚", cats: ["learning"] },
-  { id: "entertainment", label: "Entertainment", emoji: "🎭", cats: ["food", "travel"] },
-  { id: "family", label: "Family", emoji: "👨‍👩‍👧", cats: ["retail", "health"] },
-  { id: "technology", label: "Technology", emoji: "💻", cats: ["telecom", "learning"] },
+  { id: "fitness", label: "Fitness", icon: "fitness", cats: ["fitness"] },
+  { id: "travel", label: "Travel", icon: "travel", cats: ["travel"] },
+  { id: "wellness", label: "Wellness", icon: "wellness", cats: ["wellness"] },
+  { id: "food", label: "Food", icon: "food", cats: ["food"] },
+  { id: "learning", label: "Learning", icon: "learning", cats: ["learning"] },
+  { id: "entertainment", label: "Entertainment", icon: "drama", cats: ["food", "travel"] },
+  { id: "family", label: "Family", icon: "users", cats: ["retail", "health"] },
+  { id: "technology", label: "Technology", icon: "laptop", cats: ["telecom", "learning"] },
 ];
 const GOALS = [
-  { id: "save", label: "Save money", emoji: "💰" },
-  { id: "health", label: "Improve health", emoji: "❤️" },
-  { id: "skills", label: "Learn new skills", emoji: "🚀" },
-  { id: "travel", label: "Travel more", emoji: "🌍" },
-  { id: "stress", label: "Reduce stress", emoji: "🌿" },
-  { id: "enjoy", label: "Enjoy life more", emoji: "✨" },
+  { id: "save", label: "Save money", icon: "savings" },
+  { id: "health", label: "Improve health", icon: "heart" },
+  { id: "skills", label: "Learn new skills", icon: "rocket" },
+  { id: "travel", label: "Travel more", icon: "globe" },
+  { id: "stress", label: "Reduce stress", icon: "leaf" },
+  { id: "enjoy", label: "Enjoy life more", icon: "sparkles" },
 ];
 const DISCOVERY = [
-  { id: "personalized", label: "Personalized recommendations", emoji: "🎯" },
-  { id: "trending", label: "Trending now", emoji: "🔥" },
-  { id: "friends", label: "Friend recommendations", emoji: "🤝" },
-  { id: "concierge", label: "AI concierge suggestions", emoji: "✦" },
+  { id: "personalized", label: "Personalized recommendations", icon: "target" },
+  { id: "trending", label: "Trending now", icon: "flame" },
+  { id: "friends", label: "Friend recommendations", icon: "handshake" },
+  { id: "concierge", label: "AI concierge suggestions", icon: "sparkles" },
 ];
 const VIBES = [
-  { id: "Explorer", emoji: "🧭" },
-  { id: "Achiever", emoji: "🏆" },
-  { id: "Wellness Seeker", emoji: "🧘" },
-  { id: "Adventurer", emoji: "⛰️" },
-  { id: "Foodie", emoji: "🍷" },
-  { id: "Learner", emoji: "📖" },
+  { id: "Explorer", icon: "compass" },
+  { id: "Achiever", icon: "trophy" },
+  { id: "Wellness Seeker", icon: "wellness" },
+  { id: "Adventurer", icon: "mountain" },
+  { id: "Foodie", icon: "wine" },
+  { id: "Learner", icon: "book" },
 ];
 
 export function Onboarding() {
@@ -106,10 +107,10 @@ export function Onboarding() {
               <div className="grid min-h-[60vh] place-items-center text-center">
                 <div>
                   <motion.div initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", damping: 14 }}
-                    className="mx-auto grid h-20 w-20 place-items-center rounded-3xl grad-hero text-4xl text-white shadow-glow">✦</motion.div>
+                    className="mx-auto grid h-20 w-20 place-items-center rounded-3xl grad-hero text-white shadow-glow"><Ico name="sparkles" className="h-9 w-9" /></motion.div>
                   <h1 className="mt-6 font-display text-3xl font-extrabold tracking-tight md:text-4xl">Welcome, {firstName}.</h1>
                   <p className="mx-auto mt-3 max-w-md text-lg text-perx-muted">Let's personalize your benefits experience. It takes about 2 minutes.</p>
-                  <button onClick={() => setStep(1)} className="pop-btn mt-8 grad-grape px-8 py-3.5 text-base font-semibold text-white shadow-glow">Let's go →</button>
+                  <button onClick={() => setStep(1)} className="pop-btn mt-8 inline-flex items-center gap-2 grad-grape px-8 py-3.5 text-base font-semibold text-white shadow-glow">Let's go <Ico name="arrow" className="h-4 w-4" /></button>
                 </div>
               </div>
             </Slide>
@@ -146,7 +147,7 @@ export function Onboarding() {
             <Slide key="vibe">
               <Q title="Choose your vibe" sub="This shapes your profile.">
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                  {VIBES.map((o) => <Chip key={o.id} active={vibe === o.id} onClick={() => setVibe(o.id)} label={o.id} emoji={o.emoji} />)}
+                  {VIBES.map((o) => <Chip key={o.id} active={vibe === o.id} onClick={() => setVibe(o.id)} label={o.id} icon={o.icon} />)}
                 </div>
               </Q>
             </Slide>
@@ -157,8 +158,8 @@ export function Onboarding() {
             <Slide key="ai">
               <div className="text-center">
                 <motion.div initial={{ scale: 0.7, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-                  className="mx-auto grid h-16 w-16 place-items-center rounded-3xl grad-hero text-3xl text-white shadow-glow">
-                  {VIBES.find((v) => v.id === vibe)?.emoji || "✦"}
+                  className="mx-auto grid h-16 w-16 place-items-center rounded-3xl grad-hero text-white shadow-glow">
+                  <Ico name={VIBES.find((v) => v.id === vibe)?.icon || "sparkles"} className="h-7 w-7" />
                 </motion.div>
                 <h1 className="mt-5 font-display text-3xl font-extrabold tracking-tight">You're a {vibe}.</h1>
                 <p className="mx-auto mt-2 max-w-md text-perx-muted">
@@ -171,8 +172,8 @@ export function Onboarding() {
                     : (picks || []).slice(0, 4).map((it, i) => <PickRow key={it.id} it={it} i={i} />)}
                 </div>
 
-                <button onClick={finish} disabled={loadingAi} className="pop-btn mt-8 w-full grad-grape py-3.5 text-base font-semibold text-white shadow-glow disabled:opacity-50">
-                  Enter PERX →
+                <button onClick={finish} disabled={loadingAi} className="pop-btn mt-8 inline-flex w-full items-center justify-center gap-2 grad-grape py-3.5 text-base font-semibold text-white shadow-glow disabled:opacity-50">
+                  Enter PERX <Ico name="arrow" className="h-4 w-4" />
                 </button>
               </div>
             </Slide>
@@ -182,13 +183,13 @@ export function Onboarding() {
         {/* nav */}
         {step >= 1 && step <= 4 && (
           <div className="mt-8 flex items-center justify-between">
-            <button onClick={() => setStep(step - 1)} className="text-sm font-medium text-perx-muted hover:text-perx-ink">← Back</button>
+            <button onClick={() => setStep(step - 1)} className="inline-flex items-center gap-1 text-sm font-medium text-perx-muted hover:text-perx-ink"><Ico name="back" className="h-4 w-4" /> Back</button>
             <button
               onClick={() => (step === 4 ? runAI() : setStep(step + 1))}
               disabled={!canNext}
-              className="pop-btn grad-grape px-7 py-3 text-sm font-semibold text-white shadow-pop-sm disabled:opacity-40"
+              className="pop-btn inline-flex items-center gap-1.5 grad-grape px-7 py-3 text-sm font-semibold text-white shadow-pop-sm disabled:opacity-40"
             >
-              {step === 4 ? "See my picks ✦" : "Continue"}
+              {step === 4 ? <>See my picks <Ico name="sparkles" className="h-4 w-4" /></> : "Continue"}
             </button>
           </div>
         )}
@@ -215,7 +216,7 @@ function Q({ title, sub, children }) {
   );
 }
 
-function Chip({ active, onClick, label, emoji, wide }) {
+function Chip({ active, onClick, label, icon, wide }) {
   return (
     <motion.button
       whileTap={{ scale: 0.96 }}
@@ -224,7 +225,9 @@ function Chip({ active, onClick, label, emoji, wide }) {
         active ? "border-perx-purple bg-perx-purple/[0.05] shadow-pop-sm" : "border-perx-line bg-white hover:border-perx-purple/40"
       }`}
     >
-      <span className={wide ? "text-xl" : "text-3xl"}>{emoji}</span>
+      <span className={`grid place-items-center rounded-xl ${wide ? "h-8 w-8" : "h-11 w-11"} ${active ? "bg-perx-purple/10 text-perx-purple" : "bg-perx-ink/[0.04] text-perx-muted"}`}>
+        <Ico name={icon} className={wide ? "h-4 w-4" : "h-5 w-5"} />
+      </span>
       <span className="text-sm font-semibold text-perx-ink">{label}</span>
     </motion.button>
   );
@@ -235,15 +238,14 @@ function PickRow({ it, i }) {
   const p = PACKAGE_MAP[it.id];
   const title = o?.title || p?.title;
   const price = o?.priceALL ?? (p ? p.offerIds.reduce((s, x) => s + (OFFER_MAP[x]?.priceALL || 0), 0) : 0);
-  const emoji = o ? PROVIDER_MAP[o.providerId]?.emoji : p?.emoji;
   if (!title) return null;
   return (
     <motion.div initial={{ opacity: 0, x: 14 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }}
       className="card flex items-center gap-3 p-3.5">
-      <div className="grid h-11 w-11 place-items-center rounded-2xl grad-grape text-lg text-white">{emoji}</div>
+      <div className="grid h-11 w-11 place-items-center rounded-2xl grad-grape text-white">{o ? <ProviderIcon id={o.providerId} className="h-5 w-5" /> : <PackageIcon theme={p?.theme} className="h-5 w-5" />}</div>
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-bold text-perx-ink">{title}</p>
-        {it.reason && <p className="truncate text-xs text-perx-purple">✦ {it.reason}</p>}
+        {it.reason && <p className="flex items-center gap-1 truncate text-xs text-perx-purple"><Ico name="sparkles" className="h-3 w-3 flex-shrink-0" /> {it.reason}</p>}
       </div>
       <span className="font-display text-sm font-bold text-perx-ink"><Money all={price} /></span>
     </motion.div>
