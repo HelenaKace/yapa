@@ -2,12 +2,13 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useStore } from "@/app/store-context";
-import { OFFER_MAP, PROVIDER_MAP } from "@/lib/seed";
+import { PROVIDER_MAP } from "@/lib/seed";
+import { offerMapFor } from "@/lib/catalog";
 import { Money, AiBadge } from "./ui";
 import { Ico, ProviderIcon } from "./icons";
 
 export function Concierge() {
-  const { conciergeOpen, setConciergeOpen, lang, toggleCart, inCart, user, tc } = useStore();
+  const { conciergeOpen, setConciergeOpen, lang, toggleCart, inCart, user, tc, catalog } = useStore();
   const SUGGESTIONS = tc.suggestions;
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -94,7 +95,7 @@ export function Concierge() {
               )}
 
               {messages.map((m, i) => (
-                <Bubble key={i} m={m} toggleCart={toggleCart} inCart={inCart} />
+                <Bubble key={i} m={m} toggleCart={toggleCart} inCart={inCart} catalog={catalog} />
               ))}
 
               {loading && (
@@ -129,7 +130,8 @@ export function Concierge() {
   );
 }
 
-function Bubble({ m, toggleCart, inCart }) {
+function Bubble({ m, toggleCart, inCart, catalog }) {
+  const offers = offerMapFor(catalog);
   if (m.role === "user") {
     return (
       <div className="flex justify-end">
@@ -147,7 +149,7 @@ function Bubble({ m, toggleCart, inCart }) {
       {m.recommendIds?.length > 0 && (
         <div className="space-y-2 pl-1">
           {m.recommendIds.map((id) => {
-            const o = OFFER_MAP[id];
+            const o = offers[id];
             if (!o) return null;
             const added = inCart("offer", id);
             return (
@@ -167,13 +169,14 @@ function Bubble({ m, toggleCart, inCart }) {
           })}
         </div>
       )}
-      {m.bundle?.offerIds?.length >= 2 && <BundleCard bundle={m.bundle} toggleCart={toggleCart} inCart={inCart} />}
+      {m.bundle?.offerIds?.length >= 2 && <BundleCard bundle={m.bundle} toggleCart={toggleCart} inCart={inCart} catalog={catalog} />}
     </div>
   );
 }
 
-function BundleCard({ bundle, toggleCart, inCart }) {
-  const price = bundle.offerIds.reduce((s, id) => s + (OFFER_MAP[id]?.priceALL || 0), 0);
+function BundleCard({ bundle, toggleCart, inCart, catalog }) {
+  const offers = offerMapFor(catalog);
+  const price = bundle.offerIds.reduce((s, id) => s + (offers[id]?.priceALL || 0), 0);
   return (
     <div className="rounded-3xl grad-grape p-4 text-white shadow-pop">
       <div className="flex items-center gap-1.5 text-xs font-semibold opacity-90"><Ico name="sparkles" className="h-3.5 w-3.5" /> AI-built bundle</div>
@@ -181,8 +184,8 @@ function BundleCard({ bundle, toggleCart, inCart }) {
       <div className="mt-2 space-y-1">
         {bundle.offerIds.map((id) => (
           <div key={id} className="flex items-center justify-between text-sm">
-            <span>{OFFER_MAP[id]?.title}</span>
-            <span className="opacity-80"><Money all={OFFER_MAP[id]?.priceALL || 0} /></span>
+            <span>{offers[id]?.title}</span>
+            <span className="opacity-80"><Money all={offers[id]?.priceALL || 0} /></span>
           </div>
         ))}
       </div>

@@ -2,9 +2,8 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useStore } from "@/app/store-context";
-import {
-  OFFERS, PACKAGES, CATEGORIES, OFFER_MAP, PACKAGE_MAP, CATEGORY_MAP,
-} from "@/lib/seed";
+import { CATEGORIES } from "@/lib/seed";
+import { activeOffers, activePackages, offerMapFor, packageMapFor } from "@/lib/catalog";
 import { itemMeta, offerIdsForItem } from "@/lib/orders";
 import { OfferCard, PackageCard } from "./cards";
 import { Section, Money, Pill, AiBadge, Blob } from "./ui";
@@ -57,7 +56,7 @@ export function EmployeeApp() {
 
 /* ---------------- Discover ---------------- */
 function Discover({ onBrowse }) {
-  const { user, me, full, setConciergeOpen, profile, tc } = useStore();
+  const { user, me, full, catalog, setConciergeOpen, profile, tc } = useStore();
   const [recs, setRecs] = useState(null);
   const [aiLive, setAiLive] = useState(false);
 
@@ -73,8 +72,10 @@ function Discover({ onBrowse }) {
     return () => { on = false; };
   }, [me?.budgetLeftALL, profile]);
 
-  const trending = OFFERS.filter((o) => o.popular).slice(0, 4);
-  const seasonal = PACKAGES.filter((p) => p.seasonal);
+  const offerMap = offerMapFor(catalog);
+  const packageMap = packageMapFor(catalog);
+  const trending = activeOffers(catalog).filter((o) => o.popular).slice(0, 4);
+  const seasonal = activePackages(catalog).filter((p) => p.seasonal);
 
   return (
     <>
@@ -123,11 +124,11 @@ function Discover({ onBrowse }) {
         ) : (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {recs.map((it) =>
-              PACKAGE_MAP[it.id] ? (
+              packageMap[it.id] ? (
                 <PackageCard key={it.id} packageId={it.id} />
-              ) : (
+              ) : offerMap[it.id] ? (
                 <OfferCard key={it.id} offerId={it.id} reason={it.reason} />
-              )
+              ) : null
             )}
           </div>
         )}
@@ -178,8 +179,9 @@ function ActivityFeed({ activity }) {
 
 /* ---------------- Browse ---------------- */
 function Browse() {
+  const { catalog } = useStore();
   const [cat, setCat] = useState("all");
-  const list = cat === "all" ? OFFERS : OFFERS.filter((o) => o.category === cat);
+  const list = activeOffers(catalog).filter((offer) => cat === "all" || offer.category === cat);
   return (
     <>
       <div className="no-scrollbar mb-5 flex gap-2 overflow-x-auto">
@@ -208,6 +210,8 @@ function CatChip({ active, onClick, icon, label }) {
 
 /* ---------------- Packages ---------------- */
 function Packages() {
+  const { catalog } = useStore();
+  const packages = activePackages(catalog);
   return (
     <>
       <div className="mb-6 rounded-4xl bg-white/60 p-5">
@@ -215,7 +219,7 @@ function Packages() {
         <p className="text-perx-ink/60">Curated bundles that span several providers — one tap, one approval, 10% off.</p>
       </div>
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-        {PACKAGES.map((p) => <PackageCard key={p.id} packageId={p.id} large />)}
+        {packages.map((p) => <PackageCard key={p.id} packageId={p.id} large />)}
       </div>
     </>
   );
@@ -223,15 +227,16 @@ function Packages() {
 
 /* ---------------- My Benefits ---------------- */
 function MyBenefits() {
-  const { me, setWrappedOpen } = useStore();
+  const { me, setWrappedOpen, catalog } = useStore();
   if (!me) return <SkeletonRow />;
   const g = me.gamification || {};
   const orders = me.orders || [];
   const approved = orders.filter((o) => o.status === "approved");
   const lines = approved.flatMap((o) =>
-    o.items.flatMap((it) => offerIdsForItem(it))
+    o.items.flatMap((it) => offerIdsForItem(it, catalog))
   );
-  const categoriesUsed = new Set(lines.map((oid) => OFFER_MAP[oid]?.category).filter(Boolean));
+  const offerMap = offerMapFor(catalog);
+  const categoriesUsed = new Set(lines.map((oid) => offerMap[oid]?.category).filter(Boolean));
   const totalSpent = approved.reduce((s, o) => s + o.totalALL, 0);
 
   return (
@@ -274,9 +279,20 @@ function MyBenefits() {
 }
 
 function OrderRow({ order }) {
+  const { catalog } = useStore();
+  const payments = order.payments || [];
+  const fulfilled = payments.filter((payment) => payment.fulfillmentStatus === "fulfilled").length;
+  const completion =
+    order.status === "approved"
+      ? payments.length > 0 && fulfilled === payments.length
+        ? { t: "Fulfilled", c: "bg-perx-emerald/10 text-perx-emerald", e: "badge-check" }
+        : fulfilled > 0
+          ? { t: "Partly fulfilled", c: "bg-perx-gold/15 text-perx-ink", e: "clock" }
+          : { t: "Approved & paid", c: "grad-blue text-white", e: "check" }
+      : null;
   const status = {
     pending: { t: "Awaiting approval", c: "bg-perx-gold/15 text-perx-ink", e: "clock" },
-    approved: { t: "Approved & paid", c: "grad-blue text-white", e: "check" },
+    approved: completion,
     declined: { t: "Declined", c: "bg-perx-ink/10 text-perx-ink/60", e: "hand" },
   }[order.status];
   return (
@@ -284,7 +300,7 @@ function OrderRow({ order }) {
       <div className="flex-1">
         <div className="flex flex-wrap items-center gap-2">
           {order.items.map((it) => {
-            const meta = itemMeta(it);
+            const meta = itemMeta(it, catalog);
             return (
               <span key={it.id} className="inline-flex items-center gap-1.5 rounded-full border border-perx-line bg-white px-3 py-1 text-xs font-medium">
                 {meta.isPackage ? <PackageIcon theme={meta.theme} className="h-3.5 w-3.5 text-perx-purple" /> : <Ico name="ticket" className="h-3.5 w-3.5 text-perx-purple" />} {meta.title}
@@ -293,6 +309,9 @@ function OrderRow({ order }) {
           })}
         </div>
         <p className="mt-1.5 text-[11px] text-perx-ink/40">{timeAgo(order.createdAt)}</p>
+        {order.status === "approved" && payments.length > 0 && (
+          <p className="mt-1 text-[11px] font-medium text-perx-ink/45">{fulfilled}/{payments.length} provider item{payments.length > 1 ? "s" : ""} fulfilled</p>
+        )}
       </div>
       <div className="text-right">
         <div className="font-display text-lg font-semibold"><Money all={order.totalALL} /></div>
@@ -306,12 +325,12 @@ function OrderRow({ order }) {
 
 /* ---------------- Rewards ---------------- */
 function Rewards() {
-  const { me, setWrappedOpen, setConciergeOpen } = useStore();
+  const { me, catalog, setWrappedOpen, setConciergeOpen } = useStore();
   if (!me) return <SkeletonRow />;
   const g = me.gamification || {};
   const orders = me.orders || [];
   const lvl = levelFor(g.points || 0);
-  const badges = achievements(orders, g.streakWeeks || 0);
+  const badges = achievements(orders, g.streakWeeks || 0, catalog);
   const unlocked = badges.filter((b) => b.unlocked).length;
 
   return (

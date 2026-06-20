@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useState, useCallback } from "rea
 import { CURRENT_USER_ID, EMPLOYEE_MAP } from "@/lib/seed";
 import { DEFAULT_THEME, themeCopy } from "@/lib/themes";
 import { priceForItem } from "@/lib/orders";
+import { activeCatalog, catalogFromState } from "@/lib/catalog";
 
 const StoreCtx = createContext(null);
 export const useStore = () => useContext(StoreCtx);
@@ -121,7 +122,9 @@ export function StoreProvider({ children }) {
     setCart((prev) => prev.filter((c) => !(c.type === type && c.id === id)));
   }, []);
   const clearCart = useCallback(() => setCart([]), []);
-  const cartTotal = cart.reduce((s, it) => s + priceForItem(it), 0);
+  const catalog = full ? catalogFromState(full) : { offers: [], packages: [] };
+  const requestableCatalog = activeCatalog(catalog);
+  const cartTotal = cart.reduce((s, it) => s + priceForItem(it, requestableCatalog), 0);
 
   const fireRocket = useCallback((payload) => {
     setRocket(payload || { icon: "check", title: "Done!" });
@@ -166,6 +169,71 @@ export function StoreProvider({ children }) {
     }
   }, [refresh, fireRocket, showToast]);
 
+  const fulfillPayment = useCallback(async ({ orderId, paymentId, providerId }) => {
+    const r = await fetch("/api/fulfillment", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ orderId, paymentId, providerId }),
+    });
+    if (!r.ok) {
+      const d = await r.json().catch(() => ({}));
+      showToast(d.error || "Could not mark fulfilled", "warn");
+      return;
+    }
+    await refresh();
+    fireRocket({ icon: "check", title: "Fulfilled", sub: "Employee and employer updated" });
+    showToast("Benefit marked fulfilled");
+  }, [refresh, fireRocket, showToast]);
+
+  const createProviderOffer = useCallback(async (providerId, payload) => {
+    const r = await fetch("/api/provider-offers", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ providerId, ...payload }),
+    });
+    if (!r.ok) {
+      const d = await r.json().catch(() => ({}));
+      showToast(d.error || "Could not create benefit", "warn");
+      return null;
+    }
+    const d = await r.json();
+    await refresh();
+    showToast("Benefit added");
+    return d.offer;
+  }, [refresh, showToast]);
+
+  const updateProviderOffer = useCallback(async (providerId, offerId, payload) => {
+    const r = await fetch(`/api/provider-offers/${offerId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ providerId, ...payload }),
+    });
+    if (!r.ok) {
+      const d = await r.json().catch(() => ({}));
+      showToast(d.error || "Could not update benefit", "warn");
+      return null;
+    }
+    const d = await r.json();
+    await refresh();
+    showToast("Benefit updated");
+    return d.offer;
+  }, [refresh, showToast]);
+
+  const archiveProviderOffer = useCallback(async (providerId, offerId) => {
+    const r = await fetch(`/api/provider-offers/${offerId}?providerId=${encodeURIComponent(providerId)}`, {
+      method: "DELETE",
+    });
+    if (!r.ok) {
+      const d = await r.json().catch(() => ({}));
+      showToast(d.error || "Could not archive benefit", "warn");
+      return null;
+    }
+    const d = await r.json();
+    await refresh();
+    showToast("Benefit archived");
+    return d.offer;
+  }, [refresh, showToast]);
+
   const resetDemo = useCallback(async () => {
     await fetch("/api/reset", { method: "POST" });
     clearCart();
@@ -185,9 +253,11 @@ export function StoreProvider({ children }) {
     tc: themeCopy(theme),
     employeeId,
     user: EMPLOYEE_MAP[employeeId],
-    me, full, refresh,
+    me, full, catalog, requestableCatalog, refresh,
     cart, cartTotal, inCart, toggleCart, removeFromCart, clearCart,
-    submitSelection, decide, resetDemo,
+    submitSelection, decide, fulfillPayment,
+    createProviderOffer, updateProviderOffer, archiveProviderOffer,
+    resetDemo,
     rocket, fireRocket,
     toast, showToast,
     conciergeOpen, setConciergeOpen,

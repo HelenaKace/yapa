@@ -10,12 +10,12 @@ import { Ico } from "./icons";
 const SLIDE_MS = 4200;
 
 export function Wrapped() {
-  const { wrappedOpen, setWrappedOpen, me, user } = useStore();
+  const { wrappedOpen, setWrappedOpen, me, user, catalog } = useStore();
   const orders = me?.orders || [];
   const g = me?.gamification || {};
-  const s = useMemo(() => summarize(orders), [orders]);
+  const s = useMemo(() => summarize(orders, catalog), [orders, catalog]);
   const lvl = levelFor(g.points || 0);
-  const badges = achievements(orders, g.streakWeeks || 0).filter((a) => a.unlocked).length;
+  const badges = achievements(orders, g.streakWeeks || 0, catalog).filter((a) => a.unlocked).length;
   const firstName = user?.name?.split(" ")[0] || "you";
 
   const slides = useMemo(() => buildSlides({ s, g, lvl, badges, firstName }), [s, g, lvl, badges, firstName]);

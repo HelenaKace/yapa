@@ -37,9 +37,9 @@ function useCartTotal() {
 }
 
 function CartDrawer({ open, onClose }) {
-  const { cart, cartTotal, removeFromCart, submitSelection, me } = useStore();
+  const { cart, cartTotal, removeFromCart, submitSelection, me, catalog, requestableCatalog } = useStore();
   const overBudget = me && cartTotal > me.budgetLeftALL;
-  const providerCount = providerCountForItems(cart);
+  const providerCount = providerCountForItems(cart, requestableCatalog);
 
   async function submit() {
     await submitSelection();
@@ -65,8 +65,8 @@ function CartDrawer({ open, onClose }) {
             <div className="no-scrollbar max-h-[45vh] space-y-2 overflow-y-auto px-5">
               {cart.length === 0 && <p className="py-8 text-center text-perx-ink/50">Nothing here yet — go find something good.</p>}
               {cart.map((c) => {
-                const meta = itemMeta(c);
-                const price = priceForItem(c);
+                const meta = itemMeta(c, catalog);
+                const price = priceForItem(c, requestableCatalog);
                 return (
                   <div key={c.type + c.id} className="flex items-center gap-3 rounded-2xl bg-white/80 p-3 shadow-pop-sm">
                     <div className={`grid h-11 w-11 place-items-center rounded-xl ${meta.isPackage ? "grad-grape" : "grad-blue"} text-white`}>

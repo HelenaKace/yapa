@@ -85,6 +85,20 @@ body {
   .pop-btn:active {
     transform: scale(0.98);
   }
+  .field {
+    width: 100%;
+    border: 1px solid rgb(var(--c-line));
+    border-radius: 1rem;
+    background: rgb(var(--c-surface));
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .field:focus {
+    border-color: rgb(var(--c-primary));
+    box-shadow: 0 0 0 4px rgb(var(--c-primary) / 0.1);
+  }
   /* ink (black) brand fills — buttons, tiles, logo, headers (Juno signature) */
   .grad-orange,
   .grad-grape {

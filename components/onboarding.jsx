@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useStore } from "@/app/store-context";
-import { OFFER_MAP, PACKAGE_MAP, PROVIDER_MAP } from "@/lib/seed";
+import { offerMapFor, packageMapFor, packageRawPriceALL } from "@/lib/catalog";
 import { Money } from "./ui";
 import { Ico, ProviderIcon, PackageIcon } from "./icons";
 
@@ -40,7 +40,7 @@ const VIBES = [
 ];
 
 export function Onboarding() {
-  const { account, completeOnboarding } = useStore();
+  const { account, catalog, completeOnboarding } = useStore();
   const [step, setStep] = useState(0);
   const [interests, setInterests] = useState([]);
   const [goals, setGoals] = useState([]);
@@ -169,7 +169,7 @@ export function Onboarding() {
                 <div className="mt-7 space-y-3 text-left">
                   {loadingAi
                     ? Array.from({ length: 3 }).map((_, i) => <div key={i} className="skeleton h-20 rounded-2xl" />)
-                    : (picks || []).slice(0, 4).map((it, i) => <PickRow key={it.id} it={it} i={i} />)}
+                    : (picks || []).slice(0, 4).map((it, i) => <PickRow key={it.id} it={it} i={i} catalog={catalog} />)}
                 </div>
 
                 <button onClick={finish} disabled={loadingAi} className="pop-btn mt-8 inline-flex w-full items-center justify-center gap-2 grad-grape py-3.5 text-base font-semibold text-white shadow-glow disabled:opacity-50">
@@ -233,11 +233,13 @@ function Chip({ active, onClick, label, icon, wide }) {
   );
 }
 
-function PickRow({ it, i }) {
-  const o = OFFER_MAP[it.id];
-  const p = PACKAGE_MAP[it.id];
+function PickRow({ it, i, catalog }) {
+  const offers = offerMapFor(catalog);
+  const packages = packageMapFor(catalog);
+  const o = offers[it.id];
+  const p = packages[it.id];
   const title = o?.title || p?.title;
-  const price = o?.priceALL ?? (p ? p.offerIds.reduce((s, x) => s + (OFFER_MAP[x]?.priceALL || 0), 0) : 0);
+  const price = o?.priceALL ?? (p ? packageRawPriceALL(p, catalog) : 0);
   if (!title) return null;
   return (
     <motion.div initial={{ opacity: 0, x: 14 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }}

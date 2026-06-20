@@ -1,7 +1,8 @@
 "use client";
 import { motion } from "framer-motion";
 import { useStore } from "@/app/store-context";
-import { OFFER_MAP, PROVIDER_MAP, CATEGORY_MAP, PACKAGE_MAP, packagePriceALL, packageRawPriceALL } from "@/lib/seed";
+import { PROVIDER_MAP, CATEGORY_MAP } from "@/lib/seed";
+import { offerMapFor, packageMapFor, packagePriceALL, packageRawPriceALL } from "@/lib/catalog";
 import { Money, Pill } from "./ui";
 import { Ico, PackageIcon } from "./icons";
 
@@ -19,9 +20,9 @@ const CAT_TILE = {
 };
 
 export function OfferCard({ offerId, reason, compact }) {
-  const { inCart, toggleCart } = useStore();
-  const o = OFFER_MAP[offerId];
-  if (!o) return null;
+  const { inCart, toggleCart, catalog } = useStore();
+  const o = offerMapFor(catalog)[offerId];
+  if (!o || o.status === "archived") return null;
   const prov = PROVIDER_MAP[o.providerId];
   const cat = CATEGORY_MAP[o.category];
   const added = inCart("offer", o.id);
@@ -60,12 +61,13 @@ export function OfferCard({ offerId, reason, compact }) {
 }
 
 export function PackageCard({ packageId, large }) {
-  const { inCart, toggleCart } = useStore();
-  const pkg = PACKAGE_MAP[packageId];
-  if (!pkg) return null;
-  const price = packagePriceALL(pkg);
-  const raw = packageRawPriceALL(pkg);
-  const providers = [...new Set(pkg.offerIds.map((oid) => OFFER_MAP[oid]?.providerId))];
+  const { inCart, toggleCart, catalog } = useStore();
+  const offers = offerMapFor(catalog);
+  const pkg = packageMapFor(catalog)[packageId];
+  if (!pkg || pkg.status === "archived") return null;
+  const price = packagePriceALL(pkg, catalog);
+  const raw = packageRawPriceALL(pkg, catalog);
+  const providers = [...new Set(pkg.offerIds.map((oid) => offers[oid]?.providerId))];
   const added = inCart("package", pkg.id);
 
   return (
@@ -81,7 +83,7 @@ export function PackageCard({ packageId, large }) {
       <div className="mt-3 flex flex-wrap gap-1.5">
         {pkg.offerIds.map((oid) => (
           <span key={oid} className="rounded-full border border-perx-line bg-perx-bg px-2.5 py-1 text-[11px] font-medium text-perx-muted">
-            {OFFER_MAP[oid]?.title}
+            {offers[oid]?.title}
           </span>
         ))}
       </div>

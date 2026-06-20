@@ -2,13 +2,14 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useStore } from "@/app/store-context";
-import { EMPLOYEE_MAP, EMPLOYEES, EMPLOYER, OFFER_MAP } from "@/lib/seed";
+import { EMPLOYEE_MAP, EMPLOYEES, EMPLOYER } from "@/lib/seed";
+import { offerMapFor } from "@/lib/catalog";
 import { itemMeta, payoutLinesForItems, providerPayouts } from "@/lib/orders";
 import { Money, Pill, AiBadge, Section, Blob } from "./ui";
 import { Ico, PackageIcon } from "./icons";
 
 export function EmployerApp() {
-  const { full, decide, lang } = useStore();
+  const { full, catalog, decide, lang } = useStore();
   const [insights, setInsights] = useState(null);
   const [aiLive, setAiLive] = useState(false);
   const [stats, setStats] = useState(null);
@@ -18,7 +19,7 @@ export function EmployerApp() {
   const pending = orders.filter((o) => o.status === "pending");
   const decided = orders.filter((o) => o.status !== "pending");
   const pendingLiabilityALL = stats?.pendingLiabilityALL ?? pending.reduce((sum, order) => sum + order.totalALL, 0);
-  const orderSignal = orders.map((order) => `${order.id}:${order.status}:${order.decidedAt || ""}`).join("|");
+  const orderSignal = orders.map((order) => `${order.id}:${order.status}:${order.decidedAt || ""}:${(order.payments || []).map((payment) => payment.fulfillmentStatus).join(",")}`).join("|");
 
   useEffect(() => {
     setLoadingAi(true);
@@ -55,7 +56,7 @@ export function EmployerApp() {
       <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-4">
         <Kpi label="Pending approvals" value={pending.length} icon="clock" />
         <Kpi label="Pending liability" value={<Money all={pendingLiabilityALL} />} icon="wallet" />
-        <Kpi label="Active employees" value={`${stats?.activeEmployees ?? 0}/${EMPLOYEES.length}`} icon="users" />
+        <Kpi label="Fulfilled items" value={stats?.fulfilledPayments ?? 0} icon="badge-check" />
         <Kpi label="Total committed" value={<Money all={stats?.totalSpendALL || 0} />} icon="chart" />
       </div>
 
@@ -76,6 +77,7 @@ export function EmployerApp() {
                   <ApprovalCard
                     key={order.id}
                     order={order}
+                    catalog={catalog}
                     decide={decide}
                     usedALL={full?.budgetUsedByEmployee?.[order.employeeId] || 0}
                   />
@@ -102,9 +104,9 @@ export function EmployerApp() {
   );
 }
 
-function ApprovalCard({ order, decide, usedALL }) {
+function ApprovalCard({ order, catalog, decide, usedALL }) {
   const emp = EMPLOYEE_MAP[order.employeeId];
-  const payouts = providerPayouts(payoutLinesForItems(order.items));
+  const payouts = providerPayouts(payoutLinesForItems(order.items, catalog));
   const beforeALL = Math.max(0, usedALL - order.totalALL);
   const pct = Math.min(100, Math.round((usedALL / EMPLOYER.budgetPerEmployeeALL) * 100));
   const beforePct = Math.min(100, Math.round((beforeALL / EMPLOYER.budgetPerEmployeeALL) * 100));
@@ -130,7 +132,7 @@ function ApprovalCard({ order, decide, usedALL }) {
       )}
 
       <div className="mt-4 flex flex-wrap gap-1.5">
-        {order.items.map((item) => <ItemPill key={item.type + item.id} item={item} />)}
+        {order.items.map((item) => <ItemPill key={item.type + item.id} item={item} catalog={catalog} />)}
       </div>
 
       <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
@@ -175,17 +177,21 @@ function DecisionRow({ order }) {
   const emp = EMPLOYEE_MAP[order.employeeId];
   const approved = order.status === "approved";
   const payouts = providerPayouts(order.payments || []);
+  const fulfilled = (order.payments || []).filter((payment) => payment.fulfillmentStatus === "fulfilled").length;
+  const paymentCount = (order.payments || []).length;
+  const fullyFulfilled = approved && paymentCount > 0 && fulfilled === paymentCount;
   return (
     <div className="card p-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="flex flex-wrap items-center gap-2">
             <span className="font-display font-semibold">{emp?.name}</span>
-            <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${approved ? "grad-blue text-white" : "bg-perx-ink/10 text-perx-ink/60"}`}>
-              <Ico name={approved ? "check" : "hand"} className="h-3.5 w-3.5" /> {approved ? "Paid" : "Declined"}
+            <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${fullyFulfilled ? "bg-perx-emerald/10 text-perx-emerald" : approved ? "grad-blue text-white" : "bg-perx-ink/10 text-perx-ink/60"}`}>
+              <Ico name={fullyFulfilled ? "badge-check" : approved ? "check" : "hand"} className="h-3.5 w-3.5" /> {fullyFulfilled ? "Fulfilled" : approved ? "Paid" : "Declined"}
             </span>
           </div>
           <p className="mt-1 text-xs text-perx-ink/45">{order.items.length} item{order.items.length > 1 ? "s" : ""} - decided {timeAgo(order.decidedAt)}</p>
+          {approved && paymentCount > 0 && <p className="mt-1 text-[11px] font-medium text-perx-ink/40">{fulfilled}/{paymentCount} provider item{paymentCount > 1 ? "s" : ""} fulfilled</p>}
           {order.paymentBatch?.ref && <p className="mt-1 truncate text-[11px] font-medium text-perx-ink/35">{order.paymentBatch.ref}</p>}
         </div>
         <div className="text-left sm:text-right">
@@ -197,8 +203,8 @@ function DecisionRow({ order }) {
   );
 }
 
-function ItemPill({ item }) {
-  const meta = itemMeta(item);
+function ItemPill({ item, catalog }) {
+  const meta = itemMeta(item, catalog);
   return (
     <span className="inline-flex items-center gap-1.5 rounded-full border border-perx-line bg-white px-3 py-1 text-xs font-medium">
       {meta.isPackage ? <PackageIcon theme={meta.theme} className="h-3.5 w-3.5 text-perx-purple" /> : <Ico name="ticket" className="h-3.5 w-3.5 text-perx-purple" />}
@@ -208,6 +214,8 @@ function ItemPill({ item }) {
 }
 
 function ProviderPayout({ payout }) {
+  const { catalog } = useStore();
+  const offers = offerMapFor(catalog);
   return (
     <div className="rounded-2xl bg-perx-bg px-3 py-2">
       <div className="flex items-center justify-between gap-3 text-sm">
@@ -215,7 +223,7 @@ function ProviderPayout({ payout }) {
         <span className="font-display font-semibold text-perx-blue"><Money all={payout.amountALL} /></span>
       </div>
       <p className="mt-0.5 truncate text-[11px] text-perx-ink/40">
-        {payout.lines.map((line) => OFFER_MAP[line.offerId]?.title).filter(Boolean).join(", ")}
+        {payout.lines.map((line) => offers[line.offerId]?.title).filter(Boolean).join(", ")}
       </p>
     </div>
   );
