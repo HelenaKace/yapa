@@ -115,7 +115,7 @@ function AccountMenu({ account, user, logOut }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   const name = account?.name || user?.name || "Guest";
-  const email = account?.email || "demo@perx.app";
+  const email = account?.email || "demo@yapa.app";
   const initial = name.trim().charAt(0).toUpperCase();
 
   useEffect(() => {

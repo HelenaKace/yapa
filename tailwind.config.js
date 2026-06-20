@@ -13,7 +13,7 @@ module.exports = {
       colors: {
         // All tokens resolve to CSS variables (see globals.css) so themes recolor
         // everything. Default (Aurora) values equal the original premium palette.
-        perx: {
+        yapa: {
           indigo: v("--c-primary"),
           blue: v("--c-primary"),
           purple: v("--c-primary2"),

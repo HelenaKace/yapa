@@ -111,7 +111,7 @@ export function StoreProvider({ children }) {
   }, []);
 
   const skipToDemo = useCallback((r = "employee") => {
-    setAccount({ name: EMPLOYEE_MAP[CURRENT_USER_ID].name, email: "demo@perx.app" });
+    setAccount({ name: EMPLOYEE_MAP[CURRENT_USER_ID].name, email: "demo@yapa.app" });
     setRole(r);
     setStage("app");
   }, []);
