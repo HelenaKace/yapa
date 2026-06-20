@@ -41,7 +41,7 @@ export function Landing() {
         <div className="mx-auto flex max-w-6xl items-center px-5 py-3.5">
           <div className="flex items-center gap-2.5">
             <div className="grid h-9 w-9 place-items-center rounded-2xl bg-perx-ink font-display text-base font-extrabold text-white">P</div>
-            <span className="font-display text-lg font-extrabold tracking-tight">PERX</span>
+            <span className="font-display text-lg font-extrabold tracking-tight">YAPA</span>
           </div>
           <div className="ml-auto flex items-center gap-2">
             <button onClick={() => setStage("auth")} className="pop-btn px-4 py-2 text-sm font-semibold text-perx-ink hover:bg-perx-ink/[0.05]">Log in</button>

@@ -173,7 +173,7 @@ export function Onboarding() {
                 </div>
 
                 <button onClick={finish} disabled={loadingAi} className="pop-btn mt-8 inline-flex w-full items-center justify-center gap-2 grad-grape py-3.5 text-base font-semibold text-white shadow-glow disabled:opacity-50">
-                  Enter PERX <Ico name="arrow" className="h-4 w-4" />
+                  Enter YAPA <Ico name="arrow" className="h-4 w-4" />
                 </button>
               </div>
             </Slide>

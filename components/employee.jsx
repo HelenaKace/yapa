@@ -98,7 +98,7 @@ function Discover({ onBrowse }) {
         </p>
         <div className="mt-6 flex flex-wrap items-stretch gap-3">
           <HeroStat label="Budget left" value={<Money all={me?.budgetLeftALL || 0} />} />
-          <HeroStat label="PERX points" value={me?.gamification?.points ?? 0} />
+          <HeroStat label="YAPA points" value={me?.gamification?.points ?? 0} />
           <HeroStat label="Streak" value={`${me?.gamification?.streakWeeks ?? 0} wks`} />
         </div>
         <div className="mt-6 flex flex-wrap gap-2.5">
@@ -240,7 +240,7 @@ function MyBenefits() {
       {/* gamification strip */}
       <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-4">
         <StatCard icon="flame" big={`${g.streakWeeks || 0} wk`} label="Wellness streak" />
-        <StatCard icon="star" big={`${g.points || 0}`} label="PERX points" />
+        <StatCard icon="star" big={`${g.points || 0}`} label="YAPA points" />
         <StatCard icon="target" big={`${categoriesUsed.size}/${CATEGORIES.length}`} label="Categories explored" />
         <StatCard icon="badge-check" big={`${approved.length}`} label="Benefits claimed" />
       </div>
@@ -331,7 +331,7 @@ function Rewards() {
           </div>
           <div className="text-right">
             <div className="font-display text-3xl font-extrabold">{g.points || 0}</div>
-            <div className="text-xs text-perx-ink/55">PERX points</div>
+            <div className="text-xs text-perx-ink/55">YAPA points</div>
           </div>
         </div>
         <div className="mt-5">

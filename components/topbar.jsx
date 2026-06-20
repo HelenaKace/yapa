@@ -24,7 +24,7 @@ export function TopBar() {
             P
           </div>
           <div className="leading-none">
-            <div className="font-display text-lg font-extrabold tracking-tight text-perx-ink">PERX</div>
+            <div className="font-display text-lg font-extrabold tracking-tight text-perx-ink">YAPA</div>
             <div className="text-[10px] font-medium uppercase tracking-[0.18em] text-perx-muted">Tirana</div>
           </div>
         </div>
@@ -72,7 +72,7 @@ export function TopBar() {
                 onClick={() => setConciergeOpen(true)}
                 className="pop-btn hidden items-center gap-1.5 grad-grape px-3.5 py-2 text-sm text-white shadow-pop-sm md:flex"
               >
-                <Ico name="sparkles" className="h-4 w-4" /> Ask PERX
+                <Ico name="sparkles" className="h-4 w-4" /> Ask YAPA
               </button>
               {me && (
                 <div className="hidden items-center gap-2 rounded-2xl border border-perx-line bg-white py-1 pl-3 pr-1.5 shadow-soft sm:flex">

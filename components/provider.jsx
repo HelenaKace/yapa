@@ -45,7 +45,7 @@ export function ProviderApp() {
       </div>
 
       <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-4">
-        <Kpi icon="wallet" label="Revenue from PERX" value={<Money all={revenue} />} />
+        <Kpi icon="wallet" label="Revenue from YAPA" value={<Money all={revenue} />} />
         <Kpi icon="ticket" label="Live offers" value={myOffers.length} />
         <Kpi icon="badge-check" label="Bookings" value={bookings.length} />
         <Kpi icon="pin" label="Location" value={prov?.city} />
