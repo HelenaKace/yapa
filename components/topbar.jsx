@@ -6,6 +6,7 @@ import { LANGS } from "@/lib/i18n";
 import { CURRENCIES } from "@/lib/format";
 import { Money, ProgressRing } from "./ui";
 import { Ico } from "./icons";
+import { Logo } from "./logo";
 
 const ROLES = [
   { id: "employee", label: "Employee" },
@@ -19,14 +20,8 @@ export function TopBar() {
   return (
     <header className="sticky top-0 z-50 border-b border-perx-line bg-white">
       <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3">
-        <div className="flex items-center gap-2.5">
-          <div className="grid h-9 w-9 place-items-center rounded-2xl grad-grape font-display text-base font-extrabold text-white shadow-pop-sm">
-            P
-          </div>
-          <div className="leading-none">
-            <div className="font-display text-lg font-extrabold tracking-tight text-perx-ink">YAPA</div>
-            <div className="text-[10px] font-medium uppercase tracking-[0.18em] text-perx-muted">Tirana</div>
-          </div>
+        <div className="flex items-center">
+          <Logo className="h-9 sm:h-10" />
         </div>
 
         {/* role switch */}

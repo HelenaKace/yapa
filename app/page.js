@@ -11,6 +11,7 @@ import { RocketOverlay, Toast } from "@/components/ui";
 import { Landing } from "@/components/landing";
 import { Auth } from "@/components/auth";
 import { Onboarding } from "@/components/onboarding";
+import { Logo } from "@/components/logo";
 
 export default function Page() {
   const { mounted, stage, role } = useStore();
@@ -19,7 +20,7 @@ export default function Page() {
   if (!mounted) {
     return (
       <main className="grid min-h-screen place-items-center">
-        <div className="grid h-12 w-12 animate-pulse place-items-center rounded-2xl grad-grape font-display text-lg font-extrabold text-white">P</div>
+        <Logo className="h-14 animate-pulse" />
       </main>
     );
   }

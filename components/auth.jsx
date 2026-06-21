@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useStore } from "@/app/store-context";
 import { Ico } from "./icons";
 import { Blob } from "./ui";
+import { Logo } from "./logo";
 
 const ROLES = [
   { id: "employee", title: "Employee", desc: "I want to discover and use company benefits.", grad: "grad-grape", icon: "user" },
@@ -34,9 +35,8 @@ export function Auth() {
       <div className="relative hidden overflow-hidden p-12 text-perx-ink lg:block" style={{ backgroundColor: "#FCE7EE" }}>
         <Blob variant="bowtie" color="#F7D14B" className="right-16 top-28 h-16 w-12 rotate-12" />
         <Blob variant="splash" color="#7ED0A0" className="-bottom-10 -left-6 h-40 w-44 opacity-50" />
-        <button onClick={() => setStage("landing")} className="relative flex items-center gap-2.5">
-          <div className="grid h-9 w-9 place-items-center rounded-2xl bg-perx-ink font-display text-base font-extrabold text-white">P</div>
-          <span className="font-display text-lg font-extrabold tracking-tight">PERX</span>
+        <button onClick={() => setStage("landing")} className="relative inline-flex items-center">
+          <Logo className="h-11" />
         </button>
         <div className="relative mt-32 max-w-sm">
           <h2 className="font-display text-4xl font-extrabold leading-tight tracking-tight">A benefits platform you'll actually want to open.</h2>
@@ -77,7 +77,7 @@ export function Auth() {
                 </button>
 
                 <p className="mt-5 text-center text-sm text-perx-muted">
-                  {mode === "signup" ? "Already have an account?" : "New to PERX?"}{" "}
+                  {mode === "signup" ? "Already have an account?" : "New to YAPA?"}{" "}
                   <button onClick={() => setMode(mode === "signup" ? "login" : "signup")} className="font-semibold text-perx-purple">
                     {mode === "signup" ? "Log in" : "Sign up"}
                   </button>
@@ -85,7 +85,7 @@ export function Auth() {
               </motion.div>
             ) : (
               <motion.div key="role" initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -16 }}>
-                <h1 className="font-display text-2xl font-extrabold tracking-tight">How will you use PERX?</h1>
+                <h1 className="font-display text-2xl font-extrabold tracking-tight">How will you use YAPA?</h1>
                 <p className="mt-1 text-sm text-perx-muted">You can change this later.</p>
                 <div className="mt-6 space-y-3">
                   {ROLES.map((r) => (
